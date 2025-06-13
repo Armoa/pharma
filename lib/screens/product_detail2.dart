@@ -124,9 +124,9 @@ class ProductDetail2State extends State<ProductDetail2> {
                           });
                         },
                         children: [
-                          _buildProductImage("${widget.data.image}"),
-                          _buildProductImage("${widget.data.image}"),
-                          _buildProductImage("${widget.data.image}"),
+                          _buildProductImage(widget.data.image),
+                          _buildProductImage(widget.data.image),
+                          _buildProductImage(widget.data.image),
                         ],
                       ),
                     ),

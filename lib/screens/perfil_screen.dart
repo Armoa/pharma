@@ -216,7 +216,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                             style: TextStyle(fontSize: 12),
                           ),
                           subtitle: Text(
-                            '${_apellidoPerfil.toString()}',
+                            _apellidoPerfil.toString(),
                             style: subTitle,
                           ),
                         ),
