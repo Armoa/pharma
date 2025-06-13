@@ -845,7 +845,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                 ),
                               ),
                             );
-                            return; // 🔴 Evita que continúe si no hay método seleccionado
+                            return; // Evita que continúe si no hay método
                           }
 
                           if (formKey.currentState!.validate() &&

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>219403253505-v0csi3subdvq3q147jjs819i2om3nima.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.219403253505-v0csi3subdvq3q147jjs819i2om3nima</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>219403253505-crg3r2859ht45ahp6fm939or0nhatjhj.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCBG7-oh8Fy_f7p5qD4QKHIeEugBR_tapQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>219403253505</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.pharma</string>
+	<key>PROJECT_ID</key>
+	<string>pharma-d07ac</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pharma-d07ac.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:219403253505:ios:071d87fc0cc39b6c5c0d00</string>
+</dict>
+</plist>
