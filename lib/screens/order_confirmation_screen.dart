@@ -34,8 +34,7 @@ class OrderConfirmationScreen extends StatefulWidget {
 
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   String? selectedCityId; //  Guardará el ID de la ciudad seleccionada
-  String selectedPaymentMethod = "Efectivo";
-  String callePrincipal = "Calle Falsa 123";
+  String callePrincipal = "";
   bool tieneUbicacionesGuardadas = true; // Cambia según
   bool isLoading = true; // Estado inicial que indica cargando
   double subtotal = 0;
@@ -836,6 +835,19 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                 context,
                                 listen: false,
                               );
+
+                          if (paymentProvider.selectedMethod == "/" ||
+                              paymentProvider.selectedMethod.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Por favor seleccioná un método de pago",
+                                ),
+                              ),
+                            );
+                            return; // 🔴 Evita que continúe si no hay método seleccionado
+                          }
+
                           if (formKey.currentState!.validate() &&
                               (selectedCityId != null ||
                                   selectedUbicacion != null)) {

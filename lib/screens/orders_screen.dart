@@ -96,17 +96,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                   ],
                 );
-
-                // ListTile(
-                //   title: Text("Pedido #${order.id} - ${order.status}"),
-                //   subtitle: Text(
-                //     "Fecha: ${order.createdAt}\nTotal: ${order.total} Gs",
-                //   ),
-                //   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                //   onTap: () {
-                //     // Aquí puedes navegar a una pantalla con detalle del pedido
-                //   },
-                // );
               },
             );
           } else {
