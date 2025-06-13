@@ -9,6 +9,8 @@ import 'package:pharma/provider/theme.dart';
 import 'package:pharma/provider/wishlist_provider.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/listview_builder.dart';
+import 'package:pharma/services/firebase_messaging_service.dart';
+import 'package:pharma/services/notificaction.dart';
 import 'package:pharma/splash_screen.dart';
 import 'package:pharma/widget/theme_mode.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,9 @@ void main() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove('bannerShown');
+  // Inicializar el servicio de notificaciones
+  FirebaseMessagingService messagingService = FirebaseMessagingService();
+  await messagingService.initialize();
 
   runApp(
     MultiProvider(
@@ -35,6 +40,7 @@ void main() async {
       child: MyApp(),
     ),
   );
+  NotifHelper.initNotif();
 }
 
 class MyApp extends StatelessWidget {

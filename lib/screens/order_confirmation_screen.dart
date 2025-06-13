@@ -840,6 +840,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                               paymentProvider.selectedMethod.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
+                                // validadcion de metodo de pago
                                 content: Text(
                                   "Por favor seleccioná un método de pago",
                                 ),
