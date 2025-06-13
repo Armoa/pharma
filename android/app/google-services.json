@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "219403253505",
+    "project_id": "pharma-d07ac",
+    "storage_bucket": "pharma-d07ac.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219403253505:android:0d1c5319dee226c15c0d00",
+        "android_client_info": {
+          "package_name": "com.pharma.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219403253505-smg2u9tvbnhf6qsirfl9jml488430i20.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvFwlVXttumSpGxheN952v9I6JQlsgI1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219403253505-smg2u9tvbnhf6qsirfl9jml488430i20.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219403253505:android:b10fa6704b6adaf95c0d00",
+        "android_client_info": {
+          "package_name": "com.pharmma.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219403253505-crg3r2859ht45ahp6fm939or0nhatjhj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pharmma.app",
+            "certificate_hash": "b893a927edfe71d2ad5d8365abcdfd6df980869d"
+          }
+        },
+        {
+          "client_id": "219403253505-smg2u9tvbnhf6qsirfl9jml488430i20.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvFwlVXttumSpGxheN952v9I6JQlsgI1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219403253505-smg2u9tvbnhf6qsirfl9jml488430i20.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
