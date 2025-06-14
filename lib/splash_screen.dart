@@ -113,7 +113,7 @@ class SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      await authProvider.loadUser();
+      // await authProvider.loadUser();
       print("Usuario cargado: ${authProvider.user}");
       print("Token: ${authProvider.user?.token}");
 
