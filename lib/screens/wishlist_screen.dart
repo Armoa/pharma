@@ -35,9 +35,13 @@ class WishlistScreenState extends State<WishlistScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // Cargar la lista localmente
-    wishlistProvider.loadWishlistFromLocalStorage(
-      authProvider.userId!.toString(),
-    );
+    if (authProvider.userId != null) {
+      wishlistProvider.loadWishlistFromLocalStorage(
+        authProvider.userId!.toString(),
+      );
+    } else {
+      print("Usuario no autenticado, no se puede cargar la lista de deseos.");
+    }
   }
 
   @override

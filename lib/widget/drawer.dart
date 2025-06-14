@@ -22,6 +22,13 @@ class NewDrawer extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final User? user = FirebaseAuth.instance.currentUser;
 
+    final authProvider = Provider.of<local_auth_provider.AuthProvider>(
+      context,
+      listen: false,
+    );
+    final nombreUsuario = authProvider.user?.name ?? 'Invitado';
+    final emailUsuario = authProvider.user?.email ?? 'Invitado';
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -46,7 +53,9 @@ class NewDrawer extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  user?.displayName ?? "Usuario Invitado",
+                  nombreUsuario,
+
+                  // user?.displayName ?? "Usuario Invitado",
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
@@ -56,7 +65,7 @@ class NewDrawer extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user?.email ?? "correo@ejemplo.com",
+                  emailUsuario,
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
@@ -122,46 +131,99 @@ class NewDrawer extends StatelessWidget {
           // INICIAR SESSION
           ListTile(
             leading: Icon(
-              FirebaseAuth.instance.currentUser == null
-                  ? Icons.login
-                  : Icons.logout,
+              (FirebaseAuth.instance.currentUser != null ||
+                      Provider.of<local_auth_provider.AuthProvider>(
+                        context,
+                      ).isAuthenticated)
+                  ? Icons.logout
+                  : Icons.login,
             ),
             title: Text(
-              FirebaseAuth.instance.currentUser == null
-                  ? "Iniciar sesión"
-                  : "Cerrar sesión",
+              (FirebaseAuth.instance.currentUser != null ||
+                      Provider.of<local_auth_provider.AuthProvider>(
+                        context,
+                      ).isAuthenticated)
+                  ? "Cerrar sesión"
+                  : "Iniciar sesión",
             ),
             onTap: () async {
               final authService = AuthService();
               final prefs = await SharedPreferences.getInstance();
+              final authProvider =
+                  Provider.of<local_auth_provider.AuthProvider>(
+                    context,
+                    listen: false,
+                  );
 
-              if (FirebaseAuth.instance.currentUser == null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                );
-              } else {
-                // Cierra sesión en Firebase y Google
-                authService.signOut(context);
+              if (FirebaseAuth.instance.currentUser != null ||
+                  authProvider.isAuthenticated) {
+                // Cierra sesión en Firebase y Google si aplica
+                if (FirebaseAuth.instance.currentUser != null) {
+                  authService.signOut(context);
+                }
 
-                // Elimina datos de usuario guardados
+                // Elimina datos guardados en SharedPreferences (usuarios con email/contraseña)
                 await prefs.remove('user');
                 await prefs.remove('token');
 
-                Provider.of<local_auth_provider.AuthProvider>(
-                  context,
-                  listen: false,
-                ).clearUserData();
+                // Limpiar datos de usuario en AuthProvider
+                authProvider.clearUserData();
 
-                // Navegar al LoginScreen sin opción de volver atrás
+                // Navegar a LoginScreen
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
                 );
               }
             },
           ),
 
+          // ListTile(
+          //   leading: Icon(
+          //     FirebaseAuth.instance.currentUser == null
+          //         ? Icons.login
+          //         : Icons.logout,
+          //   ),
+          //   title: Text(
+          //     FirebaseAuth.instance.currentUser == null
+          //         ? "Iniciar sesión"
+          //         : "Cerrar sesión",
+          //   ),
+          //   onTap: () async {
+          //     final authService = AuthService();
+          //     final prefs = await SharedPreferences.getInstance();
+
+          //     if (FirebaseAuth.instance.currentUser == null) {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => LoginScreen()),
+          //       );
+          //     } else {
+          //       // Cierra sesión en Firebase y Google
+          //       authService.signOut(context);
+
+          //       // Elimina datos de usuario guardados
+          //       await prefs.remove('user');
+          //       await prefs.remove('token');
+
+          //       Provider.of<local_auth_provider.AuthProvider>(
+          //         context,
+          //         listen: false,
+          //       ).clearUserData();
+
+          //       // Navegar al LoginScreen sin opción de volver atrás
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (_) => const LoginScreen()),
+          //       );
+          //     }
+          //   },
+          // ),
           ListTile(
             title: Text("Cerrar Applicacion"),
             leading: Icon(Icons.close),
