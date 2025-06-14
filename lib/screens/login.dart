@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pharma/model/colors.dart';
 import 'package:pharma/model/usuario_model.dart';
-import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/screens/home.dart';
-import 'package:pharma/screens/register_user.dart';
 import 'package:pharma/services/auth_service.dart';
 import 'package:pharma/services/guardar_usuario.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true; // Para controlar la visibilidad de la contraseña
 
@@ -63,7 +59,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40.0),
                 TextFormField(
-                  controller: usernameController,
+                  controller: emailController,
                   decoration: InputDecoration(
                     labelText: "Usuario",
                     prefixIcon: const Icon(
@@ -117,34 +113,7 @@ class LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue[900],
                         ),
-                        onPressed: () async {
-                          final authProvider = Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          );
-                          final result = await authProvider.loginUser(
-                            usernameController.text,
-                            passwordController.text,
-                          );
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                result?['message'] ?? 'Error desconocido',
-                              ),
-                            ),
-                          );
-
-                          if (result?['status'] == "success") {
-                            // Redirigir a la pantalla principal
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MyHomePage(),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: () async {},
                         child: const Padding(
                           padding: EdgeInsets.all(10),
                           child: Text(
@@ -225,35 +194,6 @@ class LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
                 const Text("¿No tienes cuenta? ↓"),
-
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: AppColors.grayDarl,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Registrate",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
 
                 const SizedBox(height: 20),
                 Row(

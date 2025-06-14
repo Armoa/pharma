@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pharma/provider/auth_provider.dart' as local_auth;
+import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/services/version.dart';
@@ -113,47 +112,24 @@ class SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      // await authProvider.loadUser();
+      await authProvider.loadUser();
       print("Usuario cargado: ${authProvider.user}");
       print("Token: ${authProvider.user?.token}");
 
-      // Verificar si está autenticado por Google (Firebase) o por AuthProvider local
-      final isFirebaseUser = FirebaseAuth.instance.currentUser != null;
-      final isLocalUser = authProvider.user != null;
-
-      if (isFirebaseUser || isLocalUser) {
-        // Usuario autenticado, navegar al home
+      if (authProvider.user?.token != null &&
+          authProvider.user!.token.isNotEmpty) {
+        // Usuario logueado, navegar a MyHomePage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const MyHomePage()),
         );
       } else {
-        // Usuario no autenticado, ir al login
+        // Usuario no logueado, navegar al LoginScreen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
-
-      // final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      // await authProvider.loadUser();
-      // print("Usuario cargado: ${authProvider.user}");
-      // print("Token: ${authProvider.user?.token}");
-
-      // if (authProvider.user?.token != null &&
-      //     authProvider.user!.token.isNotEmpty) {
-      //   // Usuario logueado, navegar a MyHomePage
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (_) => const MyHomePage()),
-      //   );
-      // } else {
-      //   // Usuario no logueado, navegar al LoginScreen
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (_) => const LoginScreen()),
-      //   );
-      // }
     }
   }
 

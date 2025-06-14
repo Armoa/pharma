@@ -14,7 +14,7 @@ class UsuarioModel {
 
   final String dateBirth;
   final String dateCreated;
-  late final String token;
+  final String token;
 
   UsuarioModel({
     required this.id,
