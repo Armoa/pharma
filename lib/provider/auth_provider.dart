@@ -121,7 +121,7 @@ class AuthProvider with ChangeNotifier {
       final userJson = json.decode(userData);
       _user = UsuarioModel.fromJson(userJson);
       userId = _user!.id;
-      _user!.token = tokenData ?? '';
+      _user!.token = tokenData;
 
       // Asegurar que el token se asigna correctamente
       _user = UsuarioModel(
