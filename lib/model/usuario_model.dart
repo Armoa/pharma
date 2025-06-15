@@ -43,13 +43,11 @@ class UsuarioModel {
       email: json["email"] ?? "",
       photo: json["photo"] ?? "",
       address: json["address"] ?? "",
-
       phone: json["phone"] ?? "",
       city: json["city"] ?? "",
       barrio: json["barrio"] ?? "",
       razonsocial: json["razonsocial"] ?? "",
       ruc: json["ruc"] ?? "",
-
       dateBirth: json["date_birth"] ?? "",
       dateCreated: json["date"] ?? "",
       token: json['token'] ?? '',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/screens/address_screen.dart';
 // import 'package:pharma/screens/my_order.dart';
@@ -10,6 +11,7 @@ import 'package:pharma/services/logout_user.dart';
 import 'package:pharma/services/obtener_usuario.dart';
 import 'package:pharma/widget/appbar.dart';
 import 'package:pharma/widget/drawer.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MyAcount extends StatefulWidget {
@@ -20,8 +22,8 @@ class MyAcount extends StatefulWidget {
 }
 
 class _MyAcountState extends State<MyAcount> {
-  String? _imagenPerfilUrl;
-  String? _nombrePerfil;
+  String? photoUrl;
+  String? nombre;
   int? _idUser;
 
   late AuthProvider authProvider;
@@ -38,14 +40,29 @@ class _MyAcountState extends State<MyAcount> {
 
     // Rellenar los controladores con los datos obtenidos
     setState(() {
-      _nombrePerfil = datosPerfil?.name;
-      _imagenPerfilUrl = datosPerfil?.photo;
+      nombre = datosPerfil?.name;
+      photoUrl = datosPerfil?.photo;
       _idUser = datosPerfil?.id;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<local_auth_provider.AuthProvider>(
+      context,
+      listen: false,
+    );
+    final nombre = authProvider.user?.name ?? 'Usuario';
+
+    final photoUrl =
+        (authProvider.user?.photo != null &&
+                authProvider.user!.photo.isNotEmpty)
+            ? authProvider.user!.photo
+            : 'https://cdn-icons-png.flaticon.com/512/64/64572.png';
+
+    print("Nombre : $nombre");
+    print("Foto : $photoUrl");
+
     return Scaffold(
       backgroundColor: AppColors.blueAcua,
       appBar: const NewAppBar(),
@@ -83,11 +100,9 @@ class _MyAcountState extends State<MyAcount> {
                         child: CircleAvatar(
                           radius: 40,
                           backgroundImage:
-                              _imagenPerfilUrl != null
-                                  ? NetworkImage(_imagenPerfilUrl!)
-                                  : null,
+                              photoUrl != null ? NetworkImage(photoUrl) : null,
                           child:
-                              _imagenPerfilUrl == null
+                              photoUrl == null
                                   ? Shimmer.fromColors(
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
@@ -108,7 +123,7 @@ class _MyAcountState extends State<MyAcount> {
                         const Text("Hola, ", style: TextStyle(fontSize: 14)),
                         SizedBox(
                           child: Text(
-                            "$_nombrePerfil",
+                            nombre,
                             style: const TextStyle(
                               fontSize: 20,
                               overflow: TextOverflow.ellipsis,

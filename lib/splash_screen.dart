@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pharma/provider/auth_provider.dart';
+import 'package:pharma/provider/auth_provider.dart' as local_auth;
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/services/version.dart';
@@ -89,7 +90,6 @@ class SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkConnectivityAndSession() async {
     var connectivityResult = await _connectivity.checkConnectivity();
-
     // Aseguramos que connectivityResult se maneje correctamente
     if (connectivityResult.toString().contains('ConnectivityResult.none')) {
       // Manejo de no conexión a Internet
@@ -107,20 +107,33 @@ class SplashScreenState extends State<SplashScreen> {
       });
     } else {
       // Procede a verificar la sesión si hay conexión
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final authProvider = Provider.of<local_auth.AuthProvider>(
+        context,
+        listen: false,
+      );
+
       await authProvider.loadUser();
+      await authProvider.loadUser();
+
+      if (authProvider.user == null) {
+        print("Usuario aún no cargado");
+      } else {
+        print("Usuario cargado correctamente");
+      }
+
+      final isFirebaseUser = FirebaseAuth.instance.currentUser != null;
+      final isLocalUser = authProvider.user != null;
+
       print("Usuario cargado: ${authProvider.user}");
       print("Token: ${authProvider.user?.token}");
+      print("isLocalUser: $isLocalUser");
 
-      if (authProvider.user?.token != null &&
-          authProvider.user!.token.isNotEmpty) {
-        // Usuario logueado, navegar a MyHomePage
+      if (isFirebaseUser || isLocalUser) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const MyHomePage()),
         );
       } else {
-        // Usuario no logueado, navegar al LoginScreen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -135,10 +148,10 @@ class SplashScreenState extends State<SplashScreen> {
       body: Center(
         child:
             _isChecking
-                ? const CircularProgressIndicator() // Mostrar progreso mientras verifica
+                ? const CircularProgressIndicator()
                 : GestureDetector(
                   onTap: () {
-                    _checkConnectivityAndSession(); // Verificar nuevamente la conexión
+                    _checkConnectivityAndSession();
                   },
                   child: const Icon(
                     Icons.wifi_off,

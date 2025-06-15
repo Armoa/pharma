@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<bool> actualizarUsuarioEnMySQL(
   String name,
@@ -15,14 +15,21 @@ Future<bool> actualizarUsuarioEnMySQL(
   String ruc,
   String dateBirth,
 ) async {
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user == null) return false;
+  final prefs = await SharedPreferences.getInstance();
+  final userString = prefs.getString('user');
+
+  if (userString == null) return false;
+
+  final userJson = json.decode(userString);
+  final email = userJson['email'];
+
+  if (email == null || email.isEmpty) return false;
 
   String apiUrl = "https://farma.staweno.com/update_user.php";
   Map<String, String> userData = {
     "name": name,
     "last_name": lastName,
-    "email": user.email?.isNotEmpty == true ? user.email! : "sin_email",
+    "email": email?.isNotEmpty == true ? email! : "sin_email",
     "address": address,
     "city": city,
     "barrio": barrio,

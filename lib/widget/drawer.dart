@@ -56,7 +56,6 @@ class NewDrawer extends StatelessWidget {
                 SizedBox(height: 5),
                 Text(
                   nombre,
-                  // user?.displayName ?? "Usuario Invitado",
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark

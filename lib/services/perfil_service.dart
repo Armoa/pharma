@@ -43,35 +43,6 @@ class PerfilService {
     }
   }
 
-  // ACTUALIZAR DATOS DE PERFIL
-  // Future<bool> actualizarDatosPerfil(
-  //   String name,
-  //   String lastName,
-  //   String address,
-  //   String dateBirth,
-  // ) async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //   if (user == null) return false;
-
-  //   String apiUrl = "https://farma.staweno.com/update_user.php";
-  //   Map<String, String> userData = {
-  //     "email": user.email ?? "",
-  //     "name": name,
-  //     "last_name": lastName,
-  //     "address": address,
-  //     "date_birth": dateBirth,
-  //   };
-
-  //   var response = await http.post(
-  //     Uri.parse(apiUrl),
-  //     body: jsonEncode(userData),
-  //     headers: {"Content-Type": "application/json"},
-  //   );
-
-  //   var jsonResponse = jsonDecode(response.body);
-  //   return jsonResponse["status"] == "success";
-  // }
-
   // // Actualizar foto de perfil
   Future<bool> cargarImagenPerfil(String email, XFile imagen) async {
     String apiUrl = "https://farma.staweno.com/update_profile_picture.php";

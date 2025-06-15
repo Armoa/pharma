@@ -129,35 +129,13 @@ class AuthProvider with ChangeNotifier {
     final isLogged = prefs.getBool('isLogged') ?? false;
 
     print("Datos recuperados de SharedPreferences:");
-    print("User: $userData");
+    print("SharedPreferences: $userData");
     print("Token: $tokenData");
 
-    if (userData != null &&
-        tokenData != null &&
-        tokenData.isNotEmpty &&
-        isLogged) {
+    if (userData != null && isLogged) {
       final userJson = json.decode(userData);
       _user = UsuarioModel.fromJson(userJson);
       userId = _user!.id;
-
-      // Asegurar que el token se asigna correctamente
-      _user = UsuarioModel(
-        id: _user!.id,
-        name: _user!.name,
-        lastName: _user!.lastName,
-        email: _user!.email,
-        photo: _user!.photo,
-        address: _user!.address,
-
-        phone: _user!.phone,
-        city: _user!.city,
-        barrio: _user!.barrio,
-        razonsocial: _user!.razonsocial,
-        ruc: _user!.ruc,
-        dateBirth: _user!.dateBirth,
-        dateCreated: _user!.dateCreated,
-        token: tokenData,
-      );
       notifyListeners();
     }
   }
