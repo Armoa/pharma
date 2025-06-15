@@ -11,9 +11,10 @@ class AuthProvider with ChangeNotifier {
   UsuarioModel? usuario;
   int? userId;
   int? tokenData;
-
   String? _email;
-  String? get email => _email; //
+  String? get email => _email;
+
+  bool? isLogged;
 
   void setUserEmail(String email) {
     _email = email;
@@ -60,24 +61,64 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('https://tu-api.com/auth/login.php'),
-      body: {'email': email, 'password': password},
-    );
+  Future<Map<String, dynamic>?> loginUser(
+    String username,
+    String password,
+  ) async {
+    final url = Uri.parse("https://farma.staweno.com/login.php");
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      _user = UsuarioModel.fromJson(data['user']);
+    try {
+      final response = await http.post(
+        url,
+        body: {'name': username, 'password': password},
+      );
 
-      // Guardar usuario en almacenamiento local correctamente
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user', json.encode(data['user']));
-      await prefs.setString('token', _user!.token); // Guarda el token separado
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _user = UsuarioModel.fromJson(data['user']);
+        userId = _user!.id; // 🔥 Asegurar que `userId` se asigna correctamente
 
-      notifyListeners();
-    } else {
-      throw Exception('Error de inicio de sesión');
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user', json.encode(data['user']));
+        await prefs.setBool('isLogged', true);
+
+        notifyListeners();
+        return data;
+      } else {
+        return {"status": "error", "message": "Error de conexión"};
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "Error al conectar con el servidor",
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>?> registerUser(
+    String username,
+    String email,
+    String password,
+  ) async {
+    final url = Uri.parse("https://farma.staweno.com/register.php");
+
+    try {
+      final response = await http.post(
+        url,
+        body: {'name': username, 'email': email, 'password': password},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return responseData; // 🔥 Retorna un mapa en lugar de un String
+      } else {
+        return {"status": "error", "message": "Error de conexión"};
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "Error al conectar con el servidor",
+      };
     }
   }
 
@@ -85,16 +126,19 @@ class AuthProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('user');
     final tokenData = prefs.getString('token');
+    final isLogged = prefs.getBool('isLogged') ?? false;
 
     print("Datos recuperados de SharedPreferences:");
     print("User: $userData");
     print("Token: $tokenData");
 
-    if (userData != null && tokenData != null && tokenData.isNotEmpty) {
+    if (userData != null &&
+        tokenData != null &&
+        tokenData.isNotEmpty &&
+        isLogged) {
       final userJson = json.decode(userData);
       _user = UsuarioModel.fromJson(userJson);
       userId = _user!.id;
-      _user!.token = tokenData ?? '';
 
       // Asegurar que el token se asigna correctamente
       _user = UsuarioModel(
@@ -140,12 +184,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _user = null;
-
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');
-    await prefs.remove('token'); // Elimina el token
+    await prefs.remove('token');
+    await prefs.remove('isLogged');
 
+    _user = null;
     notifyListeners();
   }
 }

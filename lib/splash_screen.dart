@@ -107,11 +107,7 @@ class SplashScreenState extends State<SplashScreen> {
       });
     } else {
       // Procede a verificar la sesión si hay conexión
-
-      final authProvider = Provider.of<local_auth.AuthProvider>(
-        context,
-        listen: false,
-      );
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.loadUser();
       print("Usuario cargado: ${authProvider.user}");
       print("Token: ${authProvider.user?.token}");
