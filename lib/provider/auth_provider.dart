@@ -13,8 +13,11 @@ class AuthProvider with ChangeNotifier {
   int? tokenData;
   String? _email;
   String? get email => _email;
-
   bool? isLogged;
+  bool get isAuthenticated => _user != null;
+
+  UsuarioModel? _user;
+  UsuarioModel? get user => _user;
 
   void setUserEmail(String email) {
     _email = email;
@@ -34,30 +37,27 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  UsuarioModel? _user;
-  UsuarioModel? get user => _user;
-  bool get isAuthenticated => _user != null;
-
   // ✅ Notificar cambios para actualizar la UI
 
   void setUserAuthenticated(UsuarioModel user) {
     _user = user;
-    _user = UsuarioModel(
-      id: 0, // Puedes asignar un ID si lo obtienes desde MySQL
-      email: user.email,
-      name: user.name,
-      lastName: '',
-      photo: '',
-      address: '',
-      phone: '',
-      city: '',
-      barrio: '',
-      razonsocial: '',
-      ruc: '',
-      dateBirth: '',
-      dateCreated: '',
-      token: '',
-    );
+    userId = user.id;
+    // _user = UsuarioModel(
+    //   id: 0, // Puedes asignar un ID si lo obtienes desde MySQL
+    //   email: user.email,
+    //   name: user.name,
+    //   lastName: '',
+    //   photo: '',
+    //   address: '',
+    //   phone: '',
+    //   city: '',
+    //   barrio: '',
+    //   razonsocial: '',
+    //   ruc: '',
+    //   dateBirth: '',
+    //   dateCreated: '',
+    //   token: '',
+    // );
     notifyListeners();
   }
 

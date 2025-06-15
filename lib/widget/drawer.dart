@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/theme.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
@@ -12,8 +13,6 @@ import 'package:pharma/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../provider/auth_provider.dart' as local_auth_provider;
-
 class NewDrawer extends StatelessWidget {
   const NewDrawer({super.key});
 
@@ -21,6 +20,16 @@ class NewDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final User? user = FirebaseAuth.instance.currentUser;
+
+    final authProvider = Provider.of<local_auth_provider.AuthProvider>(
+      context,
+      listen: false,
+    );
+    final email = authProvider.user?.email ?? 'info@pharma.com';
+    final nombre = authProvider.user?.name ?? 'Usuario';
+
+    // print("Emails : $email");
+    // print("Nombre : $nombre");
 
     return Drawer(
       child: ListView(
@@ -46,7 +55,8 @@ class NewDrawer extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  user?.displayName ?? "Usuario Invitado",
+                  nombre,
+                  // user?.displayName ?? "Usuario Invitado",
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
@@ -56,7 +66,7 @@ class NewDrawer extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user?.email ?? "correo@ejemplo.com",
+                  email,
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
