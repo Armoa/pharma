@@ -6,6 +6,7 @@ import 'package:pharma/screens/list_product_all.dart';
 import 'package:pharma/screens/show_promo_banner.dart';
 import 'package:pharma/services/brand_box.dart';
 import 'package:pharma/services/fetch_active_banner.dart';
+import 'package:pharma/services/verificar_perfil_usuario.dart';
 import 'package:pharma/widget/appbar.dart';
 import 'package:pharma/widget/drawer.dart';
 import 'package:pharma/widget/featured_ProductCard.dart';
@@ -27,6 +28,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Verifica si hay un banner activo al iniciar
     _checkForPromoBanner();
+    // Vefifica y el usuario completo su perfil
+    verificarPerfilUsuario(context);
   }
 
   // POPUP BANNER

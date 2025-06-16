@@ -15,7 +15,7 @@ class NotificacionesProvider with ChangeNotifier {
   int get totalNoLeidas => _notificaciones.where((n) => !n.fueLeida).length;
 
   Future<void> obtenerNotificaciones(int usuarioId) async {
-    _cargando = true; // Inicia carga
+    _cargando = true;
     notifyListeners();
 
     final url = Uri.parse(
@@ -24,14 +24,25 @@ class NotificacionesProvider with ChangeNotifier {
     final respuesta = await http.get(url);
 
     if (respuesta.statusCode == 200) {
+      print(
+        "📡 Respuesta de la API: ${respuesta.body}",
+      ); // 🔍 Ver JSON de la API
       final List<dynamic> datos = json.decode(respuesta.body);
-      _notificaciones =
+      List<Notificacion> nuevasNotificaciones =
           datos.map((json) => Notificacion.fromJson(json)).toList();
-    } else {
-      _notificaciones = [];
+
+      // ⚠️ SOLUCIÓN: En lugar de limpiar, verificamos si ya existe para evitar duplicados
+      for (var nuevaNotificacion in nuevasNotificaciones) {
+        bool yaExiste = _notificaciones.any(
+          (n) => n.id == nuevaNotificacion.id,
+        );
+        if (!yaExiste) {
+          _notificaciones.add(nuevaNotificacion);
+        }
+      }
     }
 
-    _cargando = false; // Termina carga
+    _cargando = false;
     notifyListeners();
   }
 
@@ -53,7 +64,15 @@ class NotificacionesProvider with ChangeNotifier {
           }
           return notificacion;
         }).toList();
-
     notifyListeners(); // Refrescar UI
+  }
+
+  // agregar notificaciones
+  void agregarNotificacion(Notificacion notificacion) {
+    bool yaExiste = _notificaciones.any((n) => n.id == notificacion.id);
+    if (!yaExiste) {
+      _notificaciones.add(notificacion);
+      notifyListeners();
+    }
   }
 }

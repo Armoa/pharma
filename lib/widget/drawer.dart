@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
+import 'package:pharma/provider/notificaciones_provider.dart';
 import 'package:pharma/provider/theme.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/my_acount.dart';
+import 'package:pharma/screens/notification_screen.dart';
 import 'package:pharma/screens/wishlist_screen.dart';
 import 'package:pharma/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,7 @@ class _NewDrawerState extends State<NewDrawer> {
   void initState() {
     super.initState();
     _getAppVersion();
+    // verificarPerfilUsuario(context);
   }
 
   Future<void> _getAppVersion() async {
@@ -105,7 +108,7 @@ class _NewDrawerState extends State<NewDrawer> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.message),
+                  leading: Icon(Icons.home_outlined),
                   title: Text('Home'),
                   onTap: () {
                     Navigator.push(
@@ -115,15 +118,53 @@ class _NewDrawerState extends State<NewDrawer> {
                   },
                 ),
 
+                Visibility(
+                  visible:
+                      (FirebaseAuth.instance.currentUser != null ||
+                          authProvider.isAuthenticated),
+                  child: ListTile(
+                    leading: Icon(Icons.account_circle_outlined),
+                    title: Text('Mi Cuenta'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyAcount()),
+                      );
+                    },
+                  ),
+                ),
+
                 ListTile(
-                  leading: Icon(Icons.message),
-                  title: Text('Mi Cuenta'),
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: const Text('Notificaciones'),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyAcount()),
+                      MaterialPageRoute(
+                        builder: (context) => const NotificationScreen(),
+                      ),
                     );
                   },
+                  trailing: Consumer<NotificacionesProvider>(
+                    builder: (context, provider, child) {
+                      return Visibility(
+                        visible: provider.totalNoLeidas > 0,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent, // Color de fondo
+                            shape: BoxShape.circle, // Forma circular
+                          ),
+                          child: Text(
+                            '${provider.totalNoLeidas}',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ), // Estilos del texto
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 ListTile(
                   leading: Icon(Icons.favorite_border),
@@ -141,7 +182,7 @@ class _NewDrawerState extends State<NewDrawer> {
                     Provider.of<ThemeProvider>(context).themeMode ==
                             ThemeMode.dark
                         ? Icons.light_mode
-                        : Icons.dark_mode,
+                        : Icons.dark_mode_outlined,
                   ),
                   title: Text(
                     Provider.of<ThemeProvider>(context).themeMode ==

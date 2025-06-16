@@ -2,19 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pharma/model/card_model.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/model/usuario_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/order_confirmation_screen.dart';
+import 'package:pharma/screens/perfil_screen.dart';
 import 'package:pharma/services/functions.dart';
+import 'package:pharma/services/obtener_usuario.dart';
+import 'package:pharma/services/verificar_datos_faltantes.dart';
 // import 'package:pharma/screens/order_confirmation_screen.dart';
 
 import 'package:provider/provider.dart';
 
 final numeroFormat = NumberFormat("#,###", "es_PY");
 
-class CartScreenView extends StatelessWidget {
+class CartScreenView extends StatefulWidget {
   const CartScreenView({super.key});
+
+  @override
+  State<CartScreenView> createState() => _CartScreenViewState();
+}
+
+class _CartScreenViewState extends State<CartScreenView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      verificarPerfilUsuario(context);
+    });
+  }
+
+  Future<void> verificarPerfilUsuario(BuildContext context) async {
+    UsuarioModel? usuario = await obtenerUsuarioDesdeMySQL();
+    if (usuario == null) return;
+
+    List<String> datosFaltantes = verificarDatosFaltantes(usuario);
+
+    if (datosFaltantes.isNotEmpty) {
+      mostrarPopup(context, datosFaltantes);
+    }
+  }
+
+  void mostrarPopup(BuildContext context, List<String> datosFaltantes) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Actualiza tu perfil"),
+          content: Text("Falta completar: ${datosFaltantes.join(", ")}"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cerrar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+              child: Text("Actualizar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
