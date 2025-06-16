@@ -52,11 +52,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  // Future<XFile?> seleccionarImagen() async {
-  //   final ImagePicker _picker = ImagePicker();
-  //   return await _picker.pickImage(source: ImageSource.gallery);
-  // }
-
   Future<void> seleccionarYSubirImagen(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
     final XFile? imagenSeleccionada = await picker.pickImage(
@@ -113,12 +108,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     var subTitle = const TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
     return Scaffold(
-      backgroundColor: AppColors.blueAcua,
-      appBar: AppBar(
-        backgroundColor: AppColors.blueAcua,
-        surfaceTintColor: Colors.transparent,
-        title: const Text("Mi perfil"),
-      ),
+      backgroundColor: AppColors.blueLight,
+      appBar: AppBar(title: const Text("Mi perfil")),
       body: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(

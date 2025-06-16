@@ -42,22 +42,6 @@ class AuthProvider with ChangeNotifier {
   void setUserAuthenticated(UsuarioModel user) {
     _user = user;
     userId = user.id;
-    // _user = UsuarioModel(
-    //   id: 0, // Puedes asignar un ID si lo obtienes desde MySQL
-    //   email: user.email,
-    //   name: user.name,
-    //   lastName: '',
-    //   photo: '',
-    //   address: '',
-    //   phone: '',
-    //   city: '',
-    //   barrio: '',
-    //   razonsocial: '',
-    //   ruc: '',
-    //   dateBirth: '',
-    //   dateCreated: '',
-    //   token: '',
-    // );
     notifyListeners();
   }
 

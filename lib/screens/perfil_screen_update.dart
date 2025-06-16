@@ -122,11 +122,8 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       borderRadius: BorderRadius.circular(16.0),
     );
     return Scaffold(
-      backgroundColor: AppColors.blueAcua,
-      appBar: AppBar(
-        backgroundColor: AppColors.blueAcua,
-        title: const Text("Actualizar perfil"),
-      ),
+      backgroundColor: AppColors.blueLight,
+      appBar: AppBar(title: const Text("Actualizar perfil")),
       body: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(

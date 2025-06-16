@@ -37,12 +37,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.blueAcua,
-      appBar: AppBar(
-        backgroundColor: AppColors.blueAcua,
-        surfaceTintColor: Colors.transparent,
-        title: const Text("Notificaciones "),
-      ),
+      backgroundColor: AppColors.blueLight,
+      appBar: AppBar(title: const Text("Notificaciones ")),
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(

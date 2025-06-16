@@ -3,7 +3,6 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/screens/address_screen.dart';
-// import 'package:pharma/screens/my_order.dart';
 import 'package:pharma/screens/notification_screen.dart';
 import 'package:pharma/screens/orders_screen.dart';
 import 'package:pharma/screens/perfil_screen.dart';
@@ -64,7 +63,7 @@ class _MyAcountState extends State<MyAcount> {
     print("Foto : $photoUrl");
 
     return Scaffold(
-      backgroundColor: AppColors.blueAcua,
+      backgroundColor: AppColors.blueLight,
       appBar: const NewAppBar(),
       drawer: const NewDrawer(),
       body: Container(
@@ -99,10 +98,9 @@ class _MyAcountState extends State<MyAcount> {
                         padding: const EdgeInsets.all(3),
                         child: CircleAvatar(
                           radius: 40,
-                          backgroundImage:
-                              photoUrl != null ? NetworkImage(photoUrl) : null,
+                          backgroundImage: NetworkImage(photoUrl),
                           child:
-                              photoUrl == null
+                              authProvider.user == null
                                   ? Shimmer.fromColors(
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
@@ -111,7 +109,10 @@ class _MyAcountState extends State<MyAcount> {
                                       backgroundColor: Colors.grey[300],
                                     ),
                                   )
-                                  : null,
+                                  : CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage: NetworkImage(photoUrl),
+                                  ),
                         ),
                       ),
                     ),

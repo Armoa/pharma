@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/theme.dart';
@@ -13,13 +14,32 @@ import 'package:pharma/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class NewDrawer extends StatelessWidget {
+class NewDrawer extends StatefulWidget {
   const NewDrawer({super.key});
+
+  @override
+  State<NewDrawer> createState() => _NewDrawerState();
+}
+
+class _NewDrawerState extends State<NewDrawer> {
+  String appVersion = "Cargando...";
+
+  @override
+  void initState() {
+    super.initState();
+    _getAppVersion();
+  }
+
+  Future<void> _getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = packageInfo.version;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final User? user = FirebaseAuth.instance.currentUser;
 
     final authProvider = Provider.of<local_auth_provider.AuthProvider>(
       context,
@@ -28,206 +48,190 @@ class NewDrawer extends StatelessWidget {
     final email = authProvider.user?.email ?? 'info@pharma.com';
     final nombre = authProvider.user?.name ?? 'Usuario';
 
-    // print("Emails : $email");
-    // print("Nombre : $nombre");
+    final photoUrl =
+        (authProvider.user?.photo != null &&
+                authProvider.user!.photo.isNotEmpty)
+            ? authProvider.user!.photo
+            : 'https://cdn-icons-png.flaticon.com/512/64/64572.png';
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color:
-                  Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.blueBlak
-                      : AppColors.blueLight,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage:
-                      user?.photoURL != null
-                          ? NetworkImage(user!.photoURL!)
-                          : AssetImage("assets/google_logo.png")
-                              as ImageProvider,
-                ),
-                SizedBox(height: 5),
-                Text(
-                  nombre,
-                  style: TextStyle(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  decoration: BoxDecoration(
                     color:
                         Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.blueLight
-                            : AppColors.blueBlak,
-                    fontSize: 15,
+                            ? AppColors.blueBlak
+                            : AppColors.blueLight,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage:
+                            // ignore: unnecessary_null_comparison
+                            photoUrl != null
+                                ? NetworkImage(photoUrl)
+                                : AssetImage("assets/google_logo.png")
+                                    as ImageProvider,
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        nombre,
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.blueLight
+                                  : AppColors.blueBlak,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        email,
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.blueLight
+                                  : AppColors.blueBlak,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  email,
-                  style: TextStyle(
-                    color:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.blueLight
-                            : AppColors.blueBlak,
-                    fontSize: 11,
+                ListTile(
+                  leading: Icon(Icons.message),
+                  title: Text('Home'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
+                ),
+
+                ListTile(
+                  leading: Icon(Icons.message),
+                  title: Text('Mi Cuenta'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyAcount()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.favorite_border),
+                  title: Text('Mi Favoritos'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WishlistScreen()),
+                    );
+                  },
+                ),
+
+                ListTile(
+                  leading: Icon(
+                    Provider.of<ThemeProvider>(context).themeMode ==
+                            ThemeMode.dark
+                        ? Icons.light_mode
+                        : Icons.dark_mode,
                   ),
+                  title: Text(
+                    Provider.of<ThemeProvider>(context).themeMode ==
+                            ThemeMode.dark
+                        ? "Modo día"
+                        : "Modo noche",
+                  ),
+                  trailing: Transform.scale(
+                    scale: 0.8,
+                    child: Switch(
+                      value: themeProvider.themeMode == ThemeMode.dark,
+                      onChanged: (value) => themeProvider.toggleTheme(),
+                    ),
+                  ),
+                ),
+                // INICIAR y CERRAR SESSION
+                ListTile(
+                  leading: Icon(
+                    (FirebaseAuth.instance.currentUser != null ||
+                            Provider.of<local_auth_provider.AuthProvider>(
+                              context,
+                            ).isAuthenticated)
+                        ? Icons.logout
+                        : Icons.login,
+                  ),
+                  title: Text(
+                    (FirebaseAuth.instance.currentUser != null ||
+                            Provider.of<local_auth_provider.AuthProvider>(
+                              context,
+                            ).isAuthenticated)
+                        ? "Cerrar sesión"
+                        : "Iniciar sesión",
+                  ),
+                  onTap: () async {
+                    final authService = AuthService();
+                    final prefs = await SharedPreferences.getInstance();
+                    final authProvider =
+                        Provider.of<local_auth_provider.AuthProvider>(
+                          // ignore: use_build_context_synchronously
+                          context,
+                          listen: false,
+                        );
+
+                    if (FirebaseAuth.instance.currentUser != null ||
+                        authProvider.isAuthenticated) {
+                      // Cierra sesión en Firebase y Google si aplica
+                      if (FirebaseAuth.instance.currentUser != null) {
+                        // ignore: use_build_context_synchronously
+                        authService.signOut(context);
+                      }
+
+                      // Elimina datos guardados en SharedPreferences (usuarios con email/contraseña)
+                      await prefs.remove('user');
+                      await prefs.remove('token');
+
+                      // Limpiar datos de usuario en AuthProvider
+                      authProvider.clearUserData();
+
+                      // Navegar a LoginScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    }
+                  },
+                ),
+
+                ListTile(
+                  title: Text("Cerrar Applicacion"),
+                  leading: Icon(Icons.close),
+                  onTap: () => exit(0),
                 ),
               ],
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.message),
-            title: Text('Home'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomePage()),
-              );
-            },
-          ),
-
-          ListTile(
-            leading: Icon(Icons.message),
-            title: Text('Mi Cuenta'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyAcount()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.favorite_border),
-            title: Text('Mi Favoritos'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => WishlistScreen()),
-              );
-            },
-          ),
-
-          ListTile(
-            leading: Icon(
-              Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
-            ),
-            title: Text(
-              Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
-                  ? "Modo día"
-                  : "Modo noche",
-            ),
-            trailing: Transform.scale(
-              scale: 0.8,
-              child: Switch(
-                value: themeProvider.themeMode == ThemeMode.dark,
-                onChanged: (value) => themeProvider.toggleTheme(),
+          // Version del la App
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 18),
+              child: Text(
+                "Versión $appVersion",
+                style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ),
-          ),
-          // INICIAR y CERRAR SESSION
-          ListTile(
-            leading: Icon(
-              (FirebaseAuth.instance.currentUser != null ||
-                      Provider.of<local_auth_provider.AuthProvider>(
-                        context,
-                      ).isAuthenticated)
-                  ? Icons.logout
-                  : Icons.login,
-            ),
-            title: Text(
-              (FirebaseAuth.instance.currentUser != null ||
-                      Provider.of<local_auth_provider.AuthProvider>(
-                        context,
-                      ).isAuthenticated)
-                  ? "Cerrar sesión"
-                  : "Iniciar sesión",
-            ),
-            onTap: () async {
-              final authService = AuthService();
-              final prefs = await SharedPreferences.getInstance();
-              final authProvider =
-                  Provider.of<local_auth_provider.AuthProvider>(
-                    context,
-                    listen: false,
-                  );
-
-              if (FirebaseAuth.instance.currentUser != null ||
-                  authProvider.isAuthenticated) {
-                // Cierra sesión en Firebase y Google si aplica
-                if (FirebaseAuth.instance.currentUser != null) {
-                  authService.signOut(context);
-                }
-
-                // Elimina datos guardados en SharedPreferences (usuarios con email/contraseña)
-                await prefs.remove('user');
-                await prefs.remove('token');
-
-                // Limpiar datos de usuario en AuthProvider
-                authProvider.clearUserData();
-
-                // Navegar a LoginScreen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                );
-              }
-            },
-          ),
-
-          // ListTile(
-          //   leading: Icon(
-          //     FirebaseAuth.instance.currentUser == null
-          //         ? Icons.login
-          //         : Icons.logout,
-          //   ),
-          //   title: Text(
-          //     FirebaseAuth.instance.currentUser == null
-          //         ? "Iniciar sesión"
-          //         : "Cerrar sesión",
-          //   ),
-          //   onTap: () async {
-          //     final authService = AuthService();
-          //     final prefs = await SharedPreferences.getInstance();
-
-          //     if (FirebaseAuth.instance.currentUser == null) {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(builder: (context) => LoginScreen()),
-          //       );
-          //     } else {
-          //       // Cierra sesión en Firebase y Google
-          //       authService.signOut(context);
-
-          //       // Elimina datos de usuario guardados
-          //       await prefs.remove('user');
-          //       await prefs.remove('token');
-
-          //       Provider.of<local_auth_provider.AuthProvider>(
-          //         context,
-          //         listen: false,
-          //       ).clearUserData();
-
-          //       // Navegar al LoginScreen sin opción de volver atrás
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(builder: (_) => const LoginScreen()),
-          //       );
-          //     }
-          //   },
-          // ),
-          ListTile(
-            title: Text("Cerrar Applicacion"),
-            leading: Icon(Icons.close),
-            onTap: () => exit(0),
           ),
         ],
       ),

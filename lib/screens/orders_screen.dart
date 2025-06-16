@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pharma/model/colors.dart';
 import 'package:pharma/model/orders_model.dart';
 import 'package:pharma/services/functions.dart';
 import 'package:pharma/services/order_get_.dart';
@@ -29,49 +30,34 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.blueLight,
       appBar: AppBar(title: const Text("Mis pedidos")),
-      body: FutureBuilder<List<Order>>(
-        future: fetchOrders(widget.userId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final order = snapshot.data![index];
-                return Stack(
-                  children: [
-                    Positioned(
-                      top: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          (order.status),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 0,
-                      child: ListTile(
-                        leading: const Icon(Icons.wallet_giftcard_outlined),
-                        trailing: Container(
-                          alignment: Alignment.center,
-                          width: 64,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            color: getStatusColor(order.status),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(14),
-                            ),
-                          ),
+      body: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: FutureBuilder<List<Order>>(
+            future: fetchOrders(widget.userId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text("Error: ${snapshot.error}"));
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final order = snapshot.data![index];
+                    return Stack(
+                      children: [
+                        Positioned(
+                          top: 100,
                           child: Padding(
                             padding: const EdgeInsets.all(4),
                             child: Text(
@@ -84,24 +70,55 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             ),
                           ),
                         ),
-                        title: Text(
-                          'Pedido #${order.id}',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+
+                        Card(
+                          elevation: 0,
+                          child: ListTile(
+                            leading: const Icon(Icons.wallet_giftcard_outlined),
+                            trailing: Container(
+                              alignment: Alignment.center,
+                              width: 64,
+                              height: 26,
+                              decoration: BoxDecoration(
+                                color: getStatusColor(order.status),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(14),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  (order.status),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              'Pedido #${order.id}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${order.createdAt}\nTotal:  ₲.${numberFormat(order.total.toString())}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
                         ),
-                        subtitle: Text(
-                          '${order.createdAt}\nTotal:  ₲.${numberFormat(order.total.toString())}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 );
-              },
-            );
-          } else {
-            return const Center(child: Text("No hay pedidos"));
-          }
-        },
+              } else {
+                return const Center(child: Text("No hay pedidos"));
+              }
+            },
+          ),
+        ),
       ),
     );
   }
