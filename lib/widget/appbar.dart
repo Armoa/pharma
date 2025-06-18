@@ -26,7 +26,11 @@ class NewAppBar extends StatelessWidget implements PreferredSizeWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(26)),
               border: Border.all(
-                color: AppColors.blueDark, // Color de la línea
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.blueLight
+                        : AppColors.blueDark,
+
                 width: 1, // Grosor de la línea
               ),
             ),
@@ -60,7 +64,14 @@ class NewAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [Image.asset('assets/logo.png', scale: 2.5)],
+        children: [
+          Image.asset(
+            Theme.of(context).brightness == Brightness.dark
+                ? 'assets/logoApbar-dark.png'
+                : 'assets/logo.png',
+            scale: 2.5,
+          ),
+        ],
       ),
     );
   }
@@ -140,7 +151,7 @@ class ProductSearchDialogState extends State<ProductSearchDialog> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(
-                        color: AppColors.grayDarl,
+                        color: AppColors.grayDark,
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(30.0),
@@ -245,7 +256,7 @@ class ProductSearchDialogState extends State<ProductSearchDialog> {
                 child: Container(
                   width: 26,
                   height: 26,
-                  color: AppColors.grayDarl,
+                  color: AppColors.grayDark,
                   child: Icon(Icons.close, color: Colors.white, size: 16),
                 ),
               ),

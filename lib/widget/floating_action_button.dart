@@ -14,11 +14,17 @@ class NewFloatingActionButton extends StatelessWidget {
           MaterialPageRoute(builder: (context) => CartScreenView()),
         );
       },
-      backgroundColor: AppColors.blueDark,
+      backgroundColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? AppColors.blueLight
+              : AppColors.blueDark,
       shape: const CircleBorder(), // Color de fondo del botón
-      child: const Icon(
+      child: Icon(
         Icons.shopping_cart_outlined,
-        color: AppColors.white,
+        color:
+            Theme.of(context).brightness == Brightness.dark
+                ? AppColors.blueDark
+                : AppColors.blueLight,
       ), // Icono de carrito
     );
   }

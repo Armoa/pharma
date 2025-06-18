@@ -1,13 +1,17 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pharma/model/category_model.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/screens/list_categoria.dart';
 import 'package:pharma/screens/list_product_all.dart';
 import 'package:pharma/screens/show_promo_banner.dart';
 import 'package:pharma/services/brand_box.dart';
+import 'package:pharma/services/category_service.dart';
 import 'package:pharma/services/fetch_active_banner.dart';
 import 'package:pharma/services/verificar_perfil_usuario.dart';
 import 'package:pharma/widget/appbar.dart';
+import 'package:pharma/widget/category_widget.dart';
 import 'package:pharma/widget/drawer.dart';
 import 'package:pharma/widget/featured_ProductCard.dart';
 import 'package:pharma/widget/floating_action_button.dart';
@@ -25,7 +29,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
     // Verifica si hay un banner activo al iniciar
     _checkForPromoBanner();
     // Vefifica y el usuario completo su perfil
@@ -58,16 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.blueLight,
       appBar: NewAppBar(),
       drawer: NewDrawer(),
       body: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
-          color: AppColors.white,
+          color:
+              Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.blueBlak
+                  : Colors.white,
         ),
 
         child: Padding(
@@ -91,7 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                           return Container(
                             width: double.infinity,
-                            color: Colors.white,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.blueBlak
+                                    : Colors.white,
                             child: CarouselSlider.builder(
                               itemCount: featured.data!.length,
                               options: CarouselOptions(
@@ -144,13 +152,59 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               // CATEGORIAS DE PRODUCTOS
-              // SliverToBoxAdapter(
-              //   child: CategorySlider(
-              //     getCategory:
-              //         listCategory
-              //             .getCategory, // Pasar la función como parámetro
-              //   ),
-              // ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: SizedBox(
+                    height: 124,
+                    child: FutureBuilder<List<Category>>(
+                      future: fetchCategories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final categories = snapshot.data!;
+                          if (categories.isEmpty) {
+                            return const Center(
+                              child: Text("0 Categoría a mostrar"),
+                            );
+                          }
+                          return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: categories.length,
+                            itemBuilder: (context, i) {
+                              final cat = categories[i];
+                              return SizedBox(
+                                width: 94.0,
+                                child: CategoryCard(
+                                  imagePath: cat.images,
+                                  label: cat.nombre,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => ListCategoria(
+                                              cat.id,
+                                              cat.nombre,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text(snapshot.error.toString()));
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
 
               // PRODUCTOS DESTACADOS
               SliverToBoxAdapter(
@@ -166,13 +220,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      // Text(
-                      //   "Ver más",
-                      //   style: GoogleFonts.quicksand(
-                      //     fontSize: 11,
-                      //     fontWeight: FontWeight.w400,
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

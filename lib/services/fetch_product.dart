@@ -19,6 +19,24 @@ Future<List<Product>> fetchProductsPaginator(int page) async {
   }
 }
 
+Future<List<Product>> fetchProductsPaginatorCategory(
+  int page,
+  String categoryId,
+) async {
+  final response = await http.get(
+    Uri.parse(
+      'https://farma.staweno.com/get_product_category.php?page=$page&category_id=${categoryId.toString()}',
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> body = jsonDecode(response.body);
+    return body.map((json) => Product.fromJson(json)).toList();
+  } else {
+    throw Exception('Error al cargar productos');
+  }
+}
+
 Future<List<Product>> fetchProducts() async {
   final response = await http.get(
     Uri.parse('https://farma.staweno.com/get_product.php'),

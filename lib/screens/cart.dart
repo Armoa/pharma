@@ -90,12 +90,7 @@ class _CartScreenViewState extends State<CartScreenView> {
     final total = subtotal + shippingCost;
 
     return Scaffold(
-      backgroundColor: AppColors.blueLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.blueLight,
-        surfaceTintColor: Colors.transparent,
-        title: const Text("Mi Carrito"),
-      ),
+      appBar: AppBar(title: const Text("Mi Carrito")),
       body: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -245,7 +240,10 @@ class _CartScreenViewState extends State<CartScreenView> {
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.blueBlak
+                                : Colors.white,
                         border: const Border(
                           top: BorderSide(color: Colors.grey, width: 1),
                         ),
@@ -305,13 +303,19 @@ class _CartScreenViewState extends State<CartScreenView> {
 
                     // Botón para finalizar compra
                     Container(
-                      color: Colors.grey[100],
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.blueBlak
+                              : Colors.white,
                       width: double.infinity,
                       child: Padding(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.blueDark,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.blueDark,
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
@@ -354,19 +358,28 @@ class _CartScreenViewState extends State<CartScreenView> {
                             }
                           },
                           iconAlignment: IconAlignment.end,
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.arrow_forward_ios_rounded,
-                            color: Colors.white,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.blueBlak
+                                    : Colors.white,
                           ),
 
-                          label: const Text(
+                          label: Text(
                             "Confirmar Pedido",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.blueBlak
+                                      : Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 40),
                   ],
                 ),
       ),

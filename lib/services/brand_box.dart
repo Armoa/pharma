@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:pharma/model/colors.dart';
 import 'package:pharma/services/fetch_product.dart';
 
 class BrandBox extends StatefulWidget {
@@ -25,7 +26,10 @@ class _BrandBoxState extends State<BrandBox> {
               }
               return Container(
                 width: double.infinity,
-                color: Colors.white,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.blueBlak
+                        : Colors.white,
                 child: CarouselSlider.builder(
                   itemCount: featured.data!.length,
                   options: CarouselOptions(
@@ -42,9 +46,12 @@ class _BrandBoxState extends State<BrandBox> {
                       onTap: () {},
                       child: Padding(
                         padding: const EdgeInsets.all(10),
-                        child: Image.network(
-                          featured.data![i],
-                          fit: BoxFit.cover,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            featured.data![i],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     );

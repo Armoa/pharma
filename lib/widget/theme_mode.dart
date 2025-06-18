@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pharma/model/colors.dart';
 
 ThemeData lightTheme = ThemeData(
+  scaffoldBackgroundColor: AppColors.blueLight,
   brightness: Brightness.light,
   appBarTheme: AppBarTheme(
     elevation: 0.0,
@@ -18,11 +19,14 @@ ThemeData lightTheme = ThemeData(
 );
 
 ThemeData darkTheme = ThemeData(
+  scaffoldBackgroundColor: AppColors.grayDark,
   brightness: Brightness.dark,
   appBarTheme: AppBarTheme(
     surfaceTintColor: Colors.transparent,
     backgroundColor: Colors.black,
     centerTitle: true,
+
+    iconTheme: IconThemeData(color: AppColors.grayLight),
 
     titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
   ),
