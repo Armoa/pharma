@@ -50,9 +50,24 @@ Future<List<Product>> fetchProducts() async {
   }
 }
 
+// PRODUCTOS DESTACADOS
 Future<List<Product>> fetchProductsFeatured() async {
   final response = await http.get(
     Uri.parse('https://farma.staweno.com/get_product_featured.php'),
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+    return data.map((json) => Product.fromJson(json)).toList();
+  } else {
+    throw Exception('Error al cargar los productos');
+  }
+}
+
+// PRODUCTOS EN OFERTAS
+Future<List<Product>> fetchProductsOffert() async {
+  final response = await http.get(
+    Uri.parse('https://farma.staweno.com/get_product_offert.php'),
   );
 
   if (response.statusCode == 200) {

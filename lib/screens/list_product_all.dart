@@ -7,9 +7,7 @@ import 'package:pharma/provider/cart_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/product_detail.dart';
 import 'package:pharma/services/fetch_product.dart';
-import 'package:pharma/widget/appbar.dart';
 import 'package:pharma/widget/boton_agregar_wishList.dart';
-import 'package:pharma/widget/drawer.dart';
 import 'package:pharma/widget/floating_action_button.dart';
 import 'package:provider/provider.dart' show Provider;
 
@@ -29,18 +27,6 @@ class _ListProductAllState extends State<ListProductAll> {
 
   // Paginacion  Inicio
   final ScrollController _scrollController = ScrollController();
-
-  String numberFormat(String x) {
-    List<String> parts = x.toString().split('.');
-    RegExp re = RegExp(r'\B(?=(\d{3})+(?!\d))');
-    parts[0] = parts[0].replaceAll(re, '.');
-    if (parts.length == 1) {
-      parts.add('');
-    } else {
-      parts[1] = parts[1].padRight(2, '0').substring(0, 2);
-    }
-    return parts.join('');
-  }
 
   @override
   void initState() {
@@ -83,7 +69,7 @@ class _ListProductAllState extends State<ListProductAll> {
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Liberar el controlador cuando no se necesite
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -108,8 +94,7 @@ class _ListProductAllState extends State<ListProductAll> {
     int selectedQuantity = 1;
     return Scaffold(
       backgroundColor: AppColors.blueLight,
-      appBar: NewAppBar(),
-      drawer: NewDrawer(),
+      appBar: AppBar(title: const Text('Todos los Productos')),
       body: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(

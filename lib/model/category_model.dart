@@ -1,5 +1,5 @@
 class Category {
-  final int id;
+  final String id;
   final String nombre;
   final String images;
 
@@ -7,7 +7,7 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: int.parse(json['id']),
+      id: json['id'].toString(),
       nombre: json['nombre'],
       images: 'https://farma.staweno.com/images/category/${json['images']}',
     );

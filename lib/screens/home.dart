@@ -16,6 +16,7 @@ import 'package:pharma/widget/drawer.dart';
 import 'package:pharma/widget/featured_ProductCard.dart';
 import 'package:pharma/widget/floating_action_button.dart';
 import 'package:pharma/widget/last_productCard.dart';
+import 'package:pharma/widget/offert_ProductCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -154,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // CATEGORIAS DE PRODUCTOS
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(vertical: 0.0),
                   child: SizedBox(
                     height: 124,
                     child: FutureBuilder<List<Category>>(
@@ -183,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MaterialPageRoute(
                                         builder:
                                             (context) => ListCategoria(
-                                              cat.id,
+                                              int.parse(cat.id),
                                               cat.nombre,
                                             ),
                                       ),
@@ -205,6 +206,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
+
+              // PRODUCTOS OFERTAS
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Ofertas",
+                        style: GoogleFonts.quicksand(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: OffertProductCard()),
 
               // PRODUCTOS DESTACADOS
               SliverToBoxAdapter(
