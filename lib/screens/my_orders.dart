@@ -4,16 +4,16 @@ import 'package:pharma/model/orders_model.dart';
 import 'package:pharma/services/functions.dart';
 import 'package:pharma/services/order_get_.dart';
 
-class OrdersScreen extends StatefulWidget {
+class MyOrders extends StatefulWidget {
   final int userId;
 
-  const OrdersScreen({super.key, required this.userId});
+  const MyOrders({super.key, required this.userId});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  State<MyOrders> createState() => _MyOrdersState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
+class _MyOrdersState extends State<MyOrders> {
   Map<String, Color> orderStatusColors = {
     'pendiente': Colors.orange, // Pendiente
     'procesando': Colors.blue, // En proceso

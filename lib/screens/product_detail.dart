@@ -2,32 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pharma/model/card_model.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/model/cupon_model.dart';
 import 'package:pharma/model/product_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
+import 'package:pharma/provider/cupon_provider.dart';
 import 'package:pharma/screens/cart.dart';
 import 'package:pharma/screens/fullscreen_image.dart';
 import 'package:pharma/screens/login.dart';
+import 'package:pharma/services/functions.dart';
 import 'package:pharma/widget/btn_wishList.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String numberFormat(String x) {
-  List<String> parts = x.toString().split('.');
-  RegExp re = RegExp(r'\B(?=(\d{3})+(?!\d))');
-  parts[0] = parts[0].replaceAll(re, '.');
-  if (parts.length == 1) {
-    parts.add('');
-  } else {
-    parts[1] = parts[1].padRight(2, '0').substring(0, 2);
-  }
-  return parts.join('');
-}
-
 class ProductDetail extends StatefulWidget {
   final Product data;
+  final Cupon? cupon;
 
-  const ProductDetail({super.key, required this.data});
+  const ProductDetail({super.key, required this.data, this.cupon});
 
   @override
   State<ProductDetail> createState() => ProductDetailState();
@@ -60,6 +52,14 @@ class ProductDetailState extends State<ProductDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final cuponProvider = Provider.of<CuponProvider>(context);
+    // final tieneCupon = cuponProvider.productoTieneCupon(widget.data.id);
+    final cupon = cuponProvider.obtenerCuponDeProducto(widget.data.id);
+
+    // final cupon = Provider.of<CuponProvider>(
+    //   context,
+    // ).obtenerCuponDeProducto(widget.data.id);
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -178,6 +178,48 @@ class ProductDetailState extends State<ProductDetail> {
                           ],
                         ),
                       ),
+
+                      // if (widget.cupon != null)
+                      if (cupon != null)
+                        Positioned(
+                          bottom: 0,
+                          left: 10,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: Image.asset(
+                                  'assets/cupon2.png',
+                                  scale: 2.8,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 300,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    0,
+                                    10,
+                                    0,
+                                  ),
+                                  child: Text(
+                                    // cupon.tipo == 'percentage'
+                                    //     ? 'Cupón: ${cupon.codigo} - ${cupon.monto}%'
+                                    //     : 'Cupón: ${cupon.codigo} - Gs. ${cupon.monto}',
+                                    cupon.tipo == "percentage"
+                                        ? "Este producto te genera el ${cupon.monto.toStringAsFixed(0)}% OFF en cupon de descuentos en tus compras posteriores"
+                                        : "Este producto te genera  ₲${cupon.monto.toStringAsFixed(0)} en cupon de descuentos en tus compras posteriores",
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),

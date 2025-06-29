@@ -12,6 +12,7 @@ import 'package:pharma/services/fetch_active_banner.dart';
 import 'package:pharma/services/verificar_perfil_usuario.dart';
 import 'package:pharma/widget/appbar.dart';
 import 'package:pharma/widget/category_widget.dart';
+import 'package:pharma/widget/cupones_productCard.dart';
 import 'package:pharma/widget/drawer.dart';
 import 'package:pharma/widget/featured_ProductCard.dart';
 import 'package:pharma/widget/floating_action_button.dart';
@@ -226,6 +227,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SliverToBoxAdapter(child: OffertProductCard()),
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Con cupones de descuentos ",
+                        style: GoogleFonts.quicksand(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: CuponProductCard()),
 
               // PRODUCTOS DESTACADOS
               SliverToBoxAdapter(

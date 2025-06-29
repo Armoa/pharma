@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pharma/model/card_model.dart';
 import 'package:pharma/model/colors.dart';
-import 'package:pharma/model/product_model.dart';
+import 'package:pharma/model/cupon_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/product_detail.dart';
-import 'package:pharma/services/fetch_product.dart';
+import 'package:pharma/services/functions.dart';
+import 'package:pharma/services/get_cupones.dart';
 import 'package:pharma/widget/boton_agregar_wishList.dart';
 import 'package:provider/provider.dart';
 
-import '../services/functions.dart';
-
-class OffertProductCard extends StatefulWidget {
-  const OffertProductCard({super.key});
+class CuponProductCard extends StatefulWidget {
+  const CuponProductCard({super.key});
 
   @override
-  State<OffertProductCard> createState() => _OffertProductCardState();
+  State<CuponProductCard> createState() => _CuponProductCardState();
 }
 
-class _OffertProductCardState extends State<OffertProductCard> {
+class _CuponProductCardState extends State<CuponProductCard> {
   @override
   Widget build(BuildContext context) {
     int selectedQuantity = 1;
@@ -28,8 +27,8 @@ class _OffertProductCardState extends State<OffertProductCard> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       height: 240.0,
-      child: FutureBuilder<List<Product>>(
-        future: fetchProductsOffert(),
+      child: FutureBuilder<List<ProductoConCupon>>(
+        future: fetchProductosConCupon(),
         builder: (context, featured) {
           if (featured.hasData) {
             if (featured.data!.isEmpty) {
@@ -39,13 +38,17 @@ class _OffertProductCardState extends State<OffertProductCard> {
               scrollDirection: Axis.horizontal,
               itemCount: featured.data?.length,
               itemBuilder: (context, i) {
-                final product = featured.data![i];
+                final productoConCupon = featured.data![i];
+                final product = productoConCupon.producto;
+                final cupon = productoConCupon.cupon;
                 return InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProductDetail(data: product),
+                        builder:
+                            (context) =>
+                                ProductDetail(data: product, cupon: cupon),
                       ),
                     );
                   },
@@ -54,7 +57,7 @@ class _OffertProductCardState extends State<OffertProductCard> {
                     children: <Widget>[
                       Container(
                         width: 150, // Ancho fijo para cada tarjeta
-                        height: 190,
+                        height: 170,
                         margin: const EdgeInsets.fromLTRB(4, 4, 14, 0),
                         decoration: BoxDecoration(
                           color: AppColors.white,
@@ -71,7 +74,7 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                 60,
                                 60,
                                 60,
-                              ), // Color  sombra
+                              ),
                               spreadRadius: 3, // Extensión de la sombra
                               blurRadius: 4, // Desenfoque
                               offset: Offset(0, 0), // Posición (x, y)
@@ -121,33 +124,13 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                     ),
                                   ),
 
-                                  // Franja "OFERTA"
+                                  // if (cupon != null)
                                   Positioned(
-                                    top: 12,
-                                    left: -40,
-                                    child: Transform.rotate(
-                                      angle: -0.80000, // -45° en radianes
-                                      child: Container(
-                                        color: const Color.fromARGB(
-                                          230,
-                                          255,
-                                          64,
-                                          128,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 40,
-                                          vertical: 5,
-                                        ),
-                                        child: const Text(
-                                          'OFERTA',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            letterSpacing: 1.2,
-                                          ),
-                                        ),
-                                      ),
+                                    top: 8,
+                                    left: 0,
+                                    child: SizedBox(
+                                      width: 60,
+                                      child: Image.asset('assets/cupon.png'),
                                     ),
                                   ),
 
@@ -158,9 +141,8 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                       product: product,
                                     ),
                                   ),
-
                                   Positioned(
-                                    bottom: 30,
+                                    bottom: 10,
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
                                         16,
@@ -171,35 +153,12 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                       child: Text(
                                         '₲${numberFormat(product.price)}',
                                         style: TextStyle(
-                                          decoration:
-                                              TextDecoration.lineThrough,
                                           color: Theme.of(context).hintColor,
                                           fontSize: 13,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  // PRECIO OFERTA
-                                  Positioned(
-                                    bottom: 8,
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        16,
-                                        0,
-                                        0,
-                                        0,
-                                      ),
-                                      child: Text(
-                                        '₲${numberFormat(product.priceSale)}',
-                                        style: TextStyle(
-                                          color: Colors.pink,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
                                   Positioned(
                                     bottom: 0,
                                     right: 0,

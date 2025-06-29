@@ -3,8 +3,8 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/screens/address_screen.dart';
+import 'package:pharma/screens/my_orders.dart';
 import 'package:pharma/screens/notification_screen.dart';
-import 'package:pharma/screens/orders_screen.dart';
 import 'package:pharma/screens/perfil_screen.dart';
 import 'package:pharma/services/logout_user.dart';
 import 'package:pharma/services/obtener_usuario.dart';
@@ -255,7 +255,7 @@ Widget _widgetBloque2(BuildContext context, dynamic idUser) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrdersScreen(userId: idUser),
+                    builder: (context) => MyOrders(userId: idUser),
                   ),
                 );
               },

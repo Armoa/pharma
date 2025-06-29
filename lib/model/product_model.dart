@@ -16,6 +16,7 @@ class Product {
   final int idCategory;
   final String categoryName;
   final String createDate;
+  final int generaCupon;
 
   Product({
     required this.id,
@@ -35,6 +36,7 @@ class Product {
     required this.idCategory,
     required this.categoryName,
     required this.createDate,
+    required this.generaCupon,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class Product {
       idCategory: int.tryParse(json['id_category'].toString()) ?? 0,
       categoryName: json['category_name']?.toString() ?? '',
       createDate: json['create_date'] ?? '',
+      generaCupon: int.tryParse(json['genera_cupon'].toString()) ?? 0,
     );
   }
 }

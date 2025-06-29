@@ -7,6 +7,7 @@ import 'package:pharma/provider/cart_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/product_detail.dart';
 import 'package:pharma/services/fetch_product.dart';
+import 'package:pharma/services/functions.dart';
 import 'package:pharma/widget/boton_agregar_wishList.dart';
 import 'package:pharma/widget/floating_action_button.dart';
 import 'package:provider/provider.dart' show Provider;

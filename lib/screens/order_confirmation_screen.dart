@@ -6,11 +6,13 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/model/mapa_city.dart';
 import 'package:pharma/model/usuario_model.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth;
+import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
 import 'package:pharma/provider/payment_provider.dart';
 import 'package:pharma/screens/add_address_screen.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/services/functions.dart';
+import 'package:pharma/services/generar_cupones.dart';
 import 'package:pharma/services/obtener_usuario.dart';
 import 'package:pharma/services/ubicacion_service.dart';
 import 'package:pharma/widget/select_metod_pay.dart';
@@ -20,11 +22,19 @@ import 'package:shimmer/shimmer.dart';
 class OrderConfirmationScreen extends StatefulWidget {
   final List cartItems;
   final double totalAmount;
+  final double totalConDescuento;
+  final int cuponesParaGenerar;
+  final int freeShipping;
+  final List<dynamic> cuponesSeleccionados;
 
   const OrderConfirmationScreen({
     super.key,
     required this.cartItems,
     required this.totalAmount,
+    required this.totalConDescuento,
+    required this.freeShipping,
+    required this.cuponesParaGenerar,
+    required this.cuponesSeleccionados,
   });
 
   @override
@@ -41,7 +51,6 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   int shippingCost = 0;
   late double total;
   String ciudadSelect = "";
-  final addressesString = "";
   String? selectedLocation;
   String? selectedUbicacion;
 
@@ -139,9 +148,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                 }
                 : null,
       };
-      print('ORDERDATA : ');
-      print(jsonEncode(orderData)); // Verifica que se genera correctamente
-      print("Ciudad antes de enviar: $selectedCityId");
+      // print('ORDERDATA : ');
+      // print(jsonEncode(orderData)); // Verifica que se genera correctamente
+      // print("Ciudad antes de enviar: $selectedCityId");
 
       final response = await http.post(
         Uri.parse("https://farma.staweno.com/insert_order.php"),
@@ -244,10 +253,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
             usuario.email.isNotEmpty ? usuario.email : "Email no disponible";
         phoneController.text =
             usuario.phone.isNotEmpty ? usuario.phone : "Teléfono no disponible";
-        addressController.text =
-            callePrincipal.isNotEmpty
-                ? usuario.address
-                : "Address no disponible";
+        // addressController.text =
+        //     callePrincipal.isNotEmpty
+        //         ? usuario.address
+        //         : "Address no disponible";
+
+        addressController.text = usuario.address;
+
         barrioController.text =
             usuario.barrio.isNotEmpty ? usuario.barrio : "Barrio no disponible";
         razonSocialController.text =
@@ -617,7 +629,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                               ),
                               validator: (value) {
                                 // Si hay una ubicación seleccionada, este campo no es obligatorio
-                                if (selectedLocation != null) {
+                                if (selectedUbicacion != null) {
                                   return null;
                                 }
 
@@ -835,6 +847,40 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                 context,
                                 listen: false,
                               );
+                          final clienteId =
+                              Provider.of<AuthProvider>(
+                                context,
+                                listen: false,
+                              ).userId;
+                          if (clienteId == null) {
+                            return;
+                          }
+
+                          if (paymentProvider.selectedMethod == "Pago Online" &&
+                              widget.cuponesSeleccionados.isNotEmpty &&
+                              authProvider.userId != null) {
+                            final asignados = <int>{};
+                            for (final idCupon in widget.cuponesSeleccionados) {
+                              if (!asignados.contains(idCupon)) {
+                                await asignarCuponParaCliente(
+                                  clienteId,
+                                  idCupon,
+                                );
+                                asignados.add(idCupon);
+                              }
+                            }
+
+                            // Mostrar feedback solo una vez
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '🎉 Se asignaron ${asignados.length} cupones al cliente',
+                                ),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
 
                           if (paymentProvider.selectedMethod == "/" ||
                               paymentProvider.selectedMethod.isEmpty) {

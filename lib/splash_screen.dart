@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth;
+import 'package:pharma/provider/cupon_provider.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/services/version.dart';
@@ -31,6 +32,12 @@ class SplashScreenState extends State<SplashScreen> {
       } else {
         checkForUpdate(context);
       }
+    });
+    Future.microtask(() {
+      Provider.of<CuponProvider>(
+        context,
+        listen: false,
+      ).cargarCuponesPorProducto();
     });
   }
 

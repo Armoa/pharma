@@ -1,3 +1,7 @@
+import 'package:intl/intl.dart';
+
+final numeroFormat = NumberFormat("#,###", "es_PY");
+
 String numberFormat(String x) {
   List<String> parts = x.toString().split('.');
   RegExp re = RegExp(r'\B(?=(\d{3})+(?!\d))');

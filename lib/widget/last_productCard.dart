@@ -5,9 +5,11 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/model/product_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
+import 'package:pharma/provider/cupon_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/product_detail.dart';
 import 'package:pharma/services/fetch_product.dart';
+import 'package:pharma/services/functions.dart';
 import 'package:pharma/widget/boton_agregar_wishList.dart';
 import 'package:provider/provider.dart';
 
@@ -16,18 +18,6 @@ class LastProductCard extends StatefulWidget {
 
   @override
   State<LastProductCard> createState() => _LastProductCardState();
-}
-
-String numberFormat(String x) {
-  List<String> parts = x.toString().split('.');
-  RegExp re = RegExp(r'\B(?=(\d{3})+(?!\d))');
-  parts[0] = parts[0].replaceAll(re, '.');
-  if (parts.length == 1) {
-    parts.add('');
-  } else {
-    parts[1] = parts[1].padRight(2, '0').substring(0, 2);
-  }
-  return parts.join('');
 }
 
 class _LastProductCardState extends State<LastProductCard> {
@@ -50,6 +40,8 @@ class _LastProductCardState extends State<LastProductCard> {
               itemCount: featured.data?.length,
               itemBuilder: (context, i) {
                 final product = featured.data![i];
+                final cuponProvider = Provider.of<CuponProvider>(context);
+                final tieneCupon = cuponProvider.productoTieneCupon(product.id);
                 return InkWell(
                   onTap: () {
                     Navigator.push(
@@ -130,6 +122,16 @@ class _LastProductCardState extends State<LastProductCard> {
                                       ),
                                     ),
                                   ),
+
+                                  if (tieneCupon)
+                                    Positioned(
+                                      top: 8,
+                                      left: 0,
+                                      child: SizedBox(
+                                        width: 60,
+                                        child: Image.asset('assets/cupon.png'),
+                                      ),
+                                    ),
 
                                   Positioned(
                                     top: 8.0,

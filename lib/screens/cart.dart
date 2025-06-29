@@ -1,18 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pharma/model/card_model.dart';
 import 'package:pharma/model/colors.dart';
+import 'package:pharma/model/cupon_model.dart';
 import 'package:pharma/model/usuario_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
+import 'package:pharma/provider/cupon_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/order_confirmation_screen.dart';
 import 'package:pharma/screens/perfil_screen.dart';
 import 'package:pharma/services/functions.dart';
 import 'package:pharma/services/obtener_usuario.dart';
+import 'package:pharma/services/validar_cupon.dart';
 import 'package:pharma/services/verificar_datos_faltantes.dart';
-// import 'package:pharma/screens/order_confirmation_screen.dart';
-
 import 'package:provider/provider.dart';
 
 final numeroFormat = NumberFormat("#,###", "es_PY");
@@ -25,6 +29,37 @@ class CartScreenView extends StatefulWidget {
 }
 
 class _CartScreenViewState extends State<CartScreenView> {
+  Map<String, dynamic>? cuponAplicado;
+  double totalConDescuento = 0.0;
+  double totalOriginal = 0.0;
+
+  List<CuponDisponible> cuponesDelCliente = [];
+  CuponDisponible? cuponSeleccionado;
+
+  Future<void> cargarCupones() async {
+    final userId = Provider.of<AuthProvider>(context, listen: false).userId;
+    final response = await http.post(
+      Uri.parse(
+        'https://farma.staweno.com/cupones/cupones_acumulados_cliente.php',
+      ),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'cliente_id': userId}),
+    );
+
+    final data = jsonDecode(response.body);
+    // print('🧾 Cupones recibidos: ${jsonEncode(data)}');
+    if (data['success'] == true) {
+      setState(() {
+        cuponesDelCliente =
+            (data['cupones'] as List)
+                .map((c) => CuponDisponible.fromJson(c))
+                .toList();
+      });
+    } else {
+      print('Error: ${data['mensaje']}');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,12 +68,28 @@ class _CartScreenViewState extends State<CartScreenView> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    calcularTotalOriginal();
+    print('🔄 Ejecutando cargarCupones()');
+    cargarCupones();
+  }
+
+  void calcularTotalOriginal() {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final List<CartItem> cartItems = cartProvider.cartItems;
+    totalOriginal = cartItems.fold(
+      0.0,
+      (sum, item) => sum + item.price * item.quantity,
+    );
+    totalConDescuento = totalOriginal;
+  }
+
   Future<void> verificarPerfilUsuario(BuildContext context) async {
     UsuarioModel? usuario = await obtenerUsuarioDesdeMySQL();
     if (usuario == null) return;
-
     List<String> datosFaltantes = verificarDatosFaltantes(usuario);
-
     if (datosFaltantes.isNotEmpty) {
       mostrarPopup(context, datosFaltantes);
     }
@@ -75,19 +126,23 @@ class _CartScreenViewState extends State<CartScreenView> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    // Accede al estado del carrito
     final cartProvider = Provider.of<CartProvider>(context);
-
     final List<CartItem> cartItems = cartProvider.cartItems;
-    // final cartItems = cartProvider.cartItems;
-
-    // Calcular subtotal, envío y total
     final subtotal = cartItems.fold(
       0.0,
       (sum, item) => sum + item.price * item.quantity, // Ya es un double
     );
     const shippingCost = 0; // Costo de envío fijo
-    final total = subtotal + shippingCost;
+    // final total = subtotal + shippingCost;
+
+    final cuponProvider = Provider.of<CuponProvider>(context, listen: false);
+    int cuponesParaGenerar = 0;
+
+    for (final item in cartItems) {
+      if (cuponProvider.productoTieneCupon(item.id)) {
+        cuponesParaGenerar += item.quantity;
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Mi Carrito")),
@@ -125,7 +180,12 @@ class _CartScreenViewState extends State<CartScreenView> {
                         itemCount: cartItems.length,
                         itemBuilder: (context, index) {
                           final CartItem item = cartItems[index];
-
+                          final cuponProvider = Provider.of<CuponProvider>(
+                            context,
+                          );
+                          final cupon = cuponProvider.obtenerCuponDeProducto(
+                            item.id,
+                          );
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -166,13 +226,36 @@ class _CartScreenViewState extends State<CartScreenView> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
-                                          "₲ ${numeroFormat.format(item.price)}",
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            color: AppColors.blueDark,
-                                            fontWeight: FontWeight.w300,
-                                          ),
+
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "₲ ${numeroFormat.format(item.price)}",
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: AppColors.blueDark,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                            if (cupon != null)
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                      0,
+                                                      0,
+                                                      10,
+                                                      0,
+                                                    ),
+                                                child: SizedBox(
+                                                  width: 40,
+                                                  child: Image.asset(
+                                                    'assets/cupon.png',
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -250,6 +333,52 @@ class _CartScreenViewState extends State<CartScreenView> {
                       ),
                       child: Column(
                         children: [
+                          if (cuponesDelCliente.isNotEmpty)
+                            const SizedBox(height: 12),
+                          Text(
+                            'Elegí un cupón para aplicar:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          DropdownButton<CuponDisponible>(
+                            value: cuponSeleccionado,
+                            hint: Text('Seleccionar cupón'),
+                            isExpanded: true,
+                            items:
+                                cuponesDelCliente.map((cupon) {
+                                  return DropdownMenuItem(
+                                    value: cupon,
+                                    child: Text(
+                                      '${cupon.code} - ${cupon.description} (₲${cupon.amount.toStringAsFixed(0)})',
+                                    ),
+                                  );
+                                }).toList(),
+                            onChanged: (cuponElegido) {
+                              if (cuponElegido != null) {
+                                final descuento = calcularDescuento(
+                                  cupon: {
+                                    'type': cuponElegido.type,
+                                    'amount': cuponElegido.amount,
+                                  },
+                                  total: totalOriginal,
+                                  cartItems: cartProvider.cartItems,
+                                  context: context,
+                                );
+                                setState(() {
+                                  cuponSeleccionado = cuponElegido;
+                                  totalConDescuento = totalOriginal - descuento;
+                                });
+                              }
+                            },
+                          ),
+
+                          if (cuponSeleccionado != null)
+                            Text(
+                              '💸 Descuento aplicado: ₲${(totalOriginal - totalConDescuento).toStringAsFixed(0)}',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -258,7 +387,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                                 style: TextStyle(fontSize: 16),
                               ),
                               Text(
-                                "₲. ${numberFormat(subtotal.toStringAsFixed(0).toString())}",
+                                "₲${numberFormat(subtotal.toStringAsFixed(0).toString())}",
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ],
@@ -289,7 +418,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                                 ),
                               ),
                               Text(
-                                "₲. ${numberFormat(total.toStringAsFixed(0).toString())}",
+                                "₲. ${numberFormat(totalConDescuento.toStringAsFixed(0).toString())}",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -345,13 +474,36 @@ class _CartScreenViewState extends State<CartScreenView> {
                               );
                             } else {
                               // Usuario logueado, proceder con la navegación
+                              final cuponProvider = Provider.of<CuponProvider>(
+                                context,
+                                listen: false,
+                              );
+                              // Recorremos los productos y obtenemos los cupones asociados
+                              final cuponesSeleccionados =
+                                  cartItems
+                                      .map(
+                                        (item) => cuponProvider
+                                            .obtenerCuponDeProducto(item.id),
+                                      )
+                                      .where((cupon) => cupon != null)
+                                      .map((cupon) => cupon!.id)
+                                      .toSet()
+                                      .toList(); // quitamos duplicados, si hay
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder:
                                       (context) => OrderConfirmationScreen(
                                         cartItems: cartItems,
-                                        totalAmount: total,
+                                        totalAmount: totalConDescuento,
+                                        totalConDescuento: totalConDescuento,
+                                        cuponesParaGenerar: cuponesParaGenerar,
+                                        cuponesSeleccionados:
+                                            cuponesSeleccionados,
+                                        freeShipping:
+                                            cuponSeleccionado?.freeShipping ??
+                                            0,
                                       ),
                                 ),
                               );

@@ -7,6 +7,7 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart' as local_auth_provider;
 import 'package:pharma/provider/notificaciones_provider.dart';
 import 'package:pharma/provider/theme.dart';
+import 'package:pharma/screens/cupon_screen.dart';
 import 'package:pharma/screens/home.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/my_acount.dart';
@@ -134,6 +135,16 @@ class _NewDrawerState extends State<NewDrawer> {
                   ),
                 ),
 
+                ListTile(
+                  leading: const Icon(Icons.card_giftcard_rounded),
+                  title: const Text('Mis Cupones'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CuponesScreen()),
+                    );
+                  },
+                ),
                 ListTile(
                   leading: const Icon(Icons.notifications_outlined),
                   title: const Text('Notificaciones'),
