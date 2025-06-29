@@ -232,6 +232,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
       0.0,
       (sum, item) => sum + item.price * item.quantity,
     );
+
+    // if (widget.freeShipping == 1) {
+    //   shippingCost = 0;
+    // } else {
+    //   shippingCost;
+    // }
+
     shippingCost;
     total = subtotal + shippingCost;
     ciudadSelect;
@@ -598,9 +605,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                   var selectedCity = cities.firstWhere(
                                     (city) => city['name'] == value,
                                   );
-                                  shippingCost = int.parse(
-                                    selectedCity['costoEnvio']!,
-                                  );
+
+                                  shippingCost =
+                                      widget.freeShipping == 1
+                                          ? 0
+                                          : int.parse(
+                                            selectedCity['costoEnvio']!,
+                                          );
                                 });
                               },
                               validator: (value) {
@@ -830,6 +841,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                 ),
 
                 const SizedBox(height: 30),
+
                 Row(
                   children: [
                     Expanded(
@@ -997,7 +1009,8 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
           calleController.text = ubicacionSeleccionada.callePrincipal;
           latitudController.text = ubicacionSeleccionada.latitud.toString();
           longitudController.text = ubicacionSeleccionada.longitud.toString();
-          shippingCost = ubicacionSeleccionada.costo;
+          shippingCost =
+              widget.freeShipping == 1 ? 0 : ubicacionSeleccionada.costo;
         });
 
         print(

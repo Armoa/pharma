@@ -132,7 +132,7 @@ class _CartScreenViewState extends State<CartScreenView> {
       0.0,
       (sum, item) => sum + item.price * item.quantity, // Ya es un double
     );
-    const shippingCost = 0; // Costo de envío fijo
+    // const shippingCost = 0; // Costo de envío fijo
     // final total = subtotal + shippingCost;
 
     final cuponProvider = Provider.of<CuponProvider>(context, listen: false);
@@ -326,7 +326,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                         color:
                             Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.blueBlak
-                                : Colors.white,
+                                : const Color.fromARGB(255, 248, 248, 248),
                         border: const Border(
                           top: BorderSide(color: Colors.grey, width: 1),
                         ),
@@ -334,42 +334,71 @@ class _CartScreenViewState extends State<CartScreenView> {
                       child: Column(
                         children: [
                           if (cuponesDelCliente.isNotEmpty)
-                            const SizedBox(height: 12),
-                          Text(
-                            'Elegí un cupón para aplicar:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          DropdownButton<CuponDisponible>(
-                            value: cuponSeleccionado,
-                            hint: Text('Seleccionar cupón'),
-                            isExpanded: true,
-                            items:
-                                cuponesDelCliente.map((cupon) {
-                                  return DropdownMenuItem(
-                                    value: cupon,
-                                    child: Text(
-                                      '${cupon.code} - ${cupon.description} (₲${cupon.amount.toStringAsFixed(0)})',
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.card_giftcard,
+                                    color: Colors.deepPurple,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<CuponDisponible>(
+                                        value: cuponSeleccionado,
+                                        hint: const Text(
+                                          'Elegí un cupón para aplicar',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        items:
+                                            cuponesDelCliente.map((cupon) {
+                                              return DropdownMenuItem(
+                                                value: cupon,
+                                                child: Text(
+                                                  '${cupon.description} | ${cupon.code} | ₲${cupon.amount.toStringAsFixed(0)}',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                        onChanged: (cuponElegido) {
+                                          if (cuponElegido != null) {
+                                            final descuento = calcularDescuento(
+                                              cupon: {
+                                                'type': cuponElegido.type,
+                                                'amount': cuponElegido.amount,
+                                              },
+                                              total: totalOriginal,
+                                              cartItems: cartProvider.cartItems,
+                                              context: context,
+                                            );
+
+                                            setState(() {
+                                              cuponSeleccionado = cuponElegido;
+                                              totalConDescuento =
+                                                  totalOriginal - descuento;
+                                            });
+                                          }
+                                        },
+                                      ),
                                     ),
-                                  );
-                                }).toList(),
-                            onChanged: (cuponElegido) {
-                              if (cuponElegido != null) {
-                                final descuento = calcularDescuento(
-                                  cupon: {
-                                    'type': cuponElegido.type,
-                                    'amount': cuponElegido.amount,
-                                  },
-                                  total: totalOriginal,
-                                  cartItems: cartProvider.cartItems,
-                                  context: context,
-                                );
-                                setState(() {
-                                  cuponSeleccionado = cuponElegido;
-                                  totalConDescuento = totalOriginal - descuento;
-                                });
-                              }
-                            },
-                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
 
                           if (cuponSeleccionado != null)
                             Text(
@@ -379,6 +408,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -392,20 +422,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Envío:",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                "₲. ${numberFormat(shippingCost.toStringAsFixed(0))}",
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
+
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -488,7 +505,8 @@ class _CartScreenViewState extends State<CartScreenView> {
                                       .where((cupon) => cupon != null)
                                       .map((cupon) => cupon!.id)
                                       .toSet()
-                                      .toList(); // quitamos duplicados, si hay
+                                      .toList();
+                              // quitamos duplicados, si hay
 
                               Navigator.push(
                                 context,
@@ -496,7 +514,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                                   builder:
                                       (context) => OrderConfirmationScreen(
                                         cartItems: cartItems,
-                                        totalAmount: totalConDescuento,
+                                        totalAmount: totalOriginal,
                                         totalConDescuento: totalConDescuento,
                                         cuponesParaGenerar: cuponesParaGenerar,
                                         cuponesSeleccionados:
@@ -532,6 +550,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 10),
                   ],
                 ),
       ),
