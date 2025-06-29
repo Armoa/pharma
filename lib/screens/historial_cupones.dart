@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharma/model/colors.dart';
 import 'package:pharma/provider/auth_provider.dart';
-import 'package:pharma/screens/historial_cupones.dart';
 import 'package:pharma/services/functions.dart';
 import 'package:provider/provider.dart';
 
-class CuponesScreen extends StatefulWidget {
-  const CuponesScreen({super.key});
+class HistorialCuponesPage extends StatefulWidget {
+  const HistorialCuponesPage({super.key});
 
   @override
-  CuponesScreenState createState() => CuponesScreenState();
+  HistorialCuponesPageState createState() => HistorialCuponesPageState();
 }
 
-class CuponesScreenState extends State<CuponesScreen> {
+class HistorialCuponesPageState extends State<HistorialCuponesPage> {
   List<dynamic> cupones = [];
   bool cargando = true;
 
@@ -24,17 +23,15 @@ class CuponesScreenState extends State<CuponesScreen> {
     super.initState();
     final clienteId = Provider.of<AuthProvider>(context, listen: false).userId;
     if (clienteId != null) {
-      obtenerCupones();
+      obtenerCuponesUtilizados();
     }
   }
 
-  Future<void> obtenerCupones() async {
+  Future<void> obtenerCuponesUtilizados() async {
     final clienteId = Provider.of<AuthProvider>(context, listen: false).userId;
 
     final response = await http.post(
-      Uri.parse(
-        'https://farma.staweno.com/cupones/obtener_cupones_cliente.php',
-      ),
+      Uri.parse('https://farma.staweno.com/cupones/cupones_utilizados.php'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'cliente_id': clienteId}),
     );
@@ -42,7 +39,7 @@ class CuponesScreenState extends State<CuponesScreen> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        cupones = data['cupones'];
+        cupones = data['cupones_utilizados'];
         cargando = false;
       });
     } else {
@@ -62,20 +59,7 @@ class CuponesScreenState extends State<CuponesScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.blueLight,
         surfaceTintColor: Colors.transparent,
-        title: Text('Mis Cupones'),
-
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            tooltip: 'Historial de uso',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => HistorialCuponesPage()),
-              );
-            },
-          ),
-        ],
+        title: Text('Historial de utilizados'),
       ),
       body:
           cargando
@@ -109,7 +93,7 @@ class CuponesScreenState extends State<CuponesScreen> {
                         case 'fixed_cart':
                           return 'Descuento total';
                         case 'fixed_product':
-                          return 'Descuento por Producto';
+                          return 'Desc. X Producto';
                         default:
                           return 'Desconocido';
                       }
@@ -124,12 +108,10 @@ class CuponesScreenState extends State<CuponesScreen> {
                           // Imagen de fondo
                           Positioned.fill(
                             child: Image.asset(
-                              'assets/cupon-background.png',
+                              'assets/cupon-background2.png',
                               fit: BoxFit.contain,
                             ),
                           ),
-
-                          // Código de descuento (por ejemplo, "W4XZCA8R")
                           Positioned(
                             top: 8,
                             left: 120,

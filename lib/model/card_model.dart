@@ -25,4 +25,33 @@ class CartItem {
       cuponId: json['cupon_id'], // <- debe venir desde el backend
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'price': price,
+      'image': image,
+      'quantity': quantity,
+      'cupon_id': cuponId,
+    };
+  }
+
+  CartItem copyWith({
+    int? id,
+    String? name,
+    double? price,
+    String? image,
+    int? quantity,
+    int? cuponId,
+  }) {
+    return CartItem(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      image: image ?? this.image,
+      quantity: quantity ?? this.quantity,
+      cuponId: cuponId ?? this.cuponId,
+    );
+  }
 }

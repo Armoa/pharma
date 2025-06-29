@@ -26,15 +26,17 @@ class OrderConfirmationScreen extends StatefulWidget {
   final int cuponesParaGenerar;
   final int freeShipping;
   final List<dynamic> cuponesSeleccionados;
+  final int cuponSeleccionado;
 
   const OrderConfirmationScreen({
     super.key,
     required this.cartItems,
     required this.totalAmount,
     required this.totalConDescuento,
-    required this.freeShipping,
     required this.cuponesParaGenerar,
+    required this.freeShipping,
     required this.cuponesSeleccionados,
+    required this.cuponSeleccionado,
   });
 
   @override
@@ -124,7 +126,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
         'user_id': authProvider.userId, // Antes era 'customer_id'
         'payment_method': paymentProvider.selectedMethod,
         'shipping_cost': shippingCost.toStringAsFixed(0),
-        'total': (subtotal + shippingCost).toInt(),
+        'total': (widget.totalConDescuento + shippingCost).toInt(),
         'direccion': addressController.text,
         'ciudad': selectedCityId ?? '',
         'barrio': barrioController.text,
@@ -799,7 +801,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
-                            "₲. ${numberFormat(subtotal.toStringAsFixed(0))}",
+                            "₲. ${numberFormat(widget.totalConDescuento.toStringAsFixed(0))}",
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
@@ -828,7 +830,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           ),
 
                           Text(
-                            "₲. ${numberFormat((subtotal + shippingCost).toStringAsFixed(0))}",
+                            "₲. ${numberFormat((widget.totalConDescuento + shippingCost).toStringAsFixed(0))}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -867,7 +869,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           if (clienteId == null) {
                             return;
                           }
-
+                          // ASIGNAR CUPON AL CLIENTE
                           if (paymentProvider.selectedMethod == "Pago Online" &&
                               widget.cuponesSeleccionados.isNotEmpty &&
                               authProvider.userId != null) {
@@ -881,7 +883,6 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                 asignados.add(idCupon);
                               }
                             }
-
                             // Mostrar feedback solo una vez
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -894,6 +895,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                             );
                           }
 
+                          // VALIDAR METODO DE PAGO
                           if (paymentProvider.selectedMethod == "/" ||
                               paymentProvider.selectedMethod.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -910,45 +912,20 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           if (formKey.currentState!.validate() &&
                               (selectedCityId != null ||
                                   selectedUbicacion != null)) {
-                            // Imprimir el JSON antes de enviarlo
+                            await sendOrder(context);
 
-                            print(
-                              jsonEncode({
-                                'user_id': authProvider.userId,
-                                'payment_method':
-                                    paymentProvider.selectedMethod,
-                                'costo_envio': shippingCost.toStringAsFixed(0),
-                                'total': (subtotal + shippingCost)
-                                    .toStringAsFixed(0),
-                                'productos':
-                                    widget.cartItems.map((item) {
-                                      return {
-                                        'product_id': item.id,
-                                        'quantity': item.quantity,
-                                      };
-                                    }).toList(),
-
-                                'ubicacion':
-                                    selectedUbicacion != null
-                                        ? [
-                                          {
-                                            'nombre_ubicacion':
-                                                nombreUbicacionController.text,
-                                            'numero_casa':
-                                                numeroCasaController.text,
-                                            'ciudad': ciudadController.text,
-                                            'nombre_calle':
-                                                calleController.text,
-                                            'latitud': latitudController.text,
-                                            'longitud': longitudController.text,
-                                            'ID Ubicacion': selectedUbicacion,
-                                          },
-                                        ]
-                                        : null,
+                            // DESCONTAR CUPON UTILIZADO
+                            // if (widget.cuponSeleccionado != null) {
+                            await http.post(
+                              Uri.parse(
+                                'https://farma.staweno.com/cupones/marcar_cupon_utilizado.php',
+                              ),
+                              headers: {'Content-Type': 'application/json'},
+                              body: jsonEncode({
+                                'cliente_cupon_id': widget.cuponSeleccionado,
                               }),
                             );
-
-                            await sendOrder(context);
+                            // }
 
                             // Vacía el formulario después de enviar el pedido
                             clearFormFields();
@@ -1069,7 +1046,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                 }
 
                 print('Ubicación ID: $selectedUbicacion');
-                actualizarUbicacionSeleccionada(); // 🔥 Ahora ejecutamos la función separada
+                actualizarUbicacionSeleccionada(); //  Ahora ejecutamos la función separada
               });
             },
           ),

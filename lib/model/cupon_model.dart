@@ -70,6 +70,16 @@ class CuponDisponible {
     required this.freeShipping,
   });
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CuponDisponible &&
+          runtimeType == other.runtimeType &&
+          clienteCuponId == other.clienteCuponId;
+
+  @override
+  int get hashCode => clienteCuponId.hashCode;
+
   factory CuponDisponible.fromJson(Map<String, dynamic> json) {
     return CuponDisponible(
       clienteCuponId: int.parse(json['cliente_cupon_id'].toString()),

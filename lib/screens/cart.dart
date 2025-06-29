@@ -365,11 +365,11 @@ class _CartScreenViewState extends State<CartScreenView> {
                                               return DropdownMenuItem(
                                                 value: cupon,
                                                 child: Text(
-                                                  '${cupon.description} | ${cupon.code} | ₲${cupon.amount.toStringAsFixed(0)}',
+                                                  '${cupon.description} | ${cupon.code} ',
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                    fontSize: 12,
+                                                    fontSize: 14,
                                                   ),
                                                 ),
                                               );
@@ -396,6 +396,30 @@ class _CartScreenViewState extends State<CartScreenView> {
                                       ),
                                     ),
                                   ),
+
+                                  const SizedBox(width: 8),
+                                  if (cuponSeleccionado != null)
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          cuponSeleccionado = null;
+                                          totalConDescuento = totalOriginal;
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade200,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.all(6),
+                                        child: const Icon(
+                                          Icons.close,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -422,7 +446,6 @@ class _CartScreenViewState extends State<CartScreenView> {
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -506,7 +529,19 @@ class _CartScreenViewState extends State<CartScreenView> {
                                       .map((cupon) => cupon!.id)
                                       .toSet()
                                       .toList();
-                              // quitamos duplicados, si hay
+
+                              print('TOTAL ORIGINAL: $totalOriginal');
+                              print('TOTAL CON DESCUENTO: $totalConDescuento');
+                              print('TOTAL ORIGINAL: $totalOriginal');
+                              print(
+                                'CUPONES SELECCIONADOS: $cuponesSeleccionados',
+                              );
+                              // CANTIDAD DE CUPONES A GENERAR
+                              print(
+                                'CUPONES PARA GENERAR: $cuponesParaGenerar',
+                              );
+                              print('CUPONES SECT. ID: ');
+                              print(cuponSeleccionado?.clienteCuponId);
 
                               Navigator.push(
                                 context,
@@ -521,6 +556,9 @@ class _CartScreenViewState extends State<CartScreenView> {
                                             cuponesSeleccionados,
                                         freeShipping:
                                             cuponSeleccionado?.freeShipping ??
+                                            0,
+                                        cuponSeleccionado:
+                                            cuponSeleccionado?.clienteCuponId ??
                                             0,
                                       ),
                                 ),

@@ -208,10 +208,10 @@ class ProductDetailState extends State<ProductDetail> {
                                     //     : 'Cupón: ${cupon.codigo} - Gs. ${cupon.monto}',
                                     cupon.tipo == "percentage"
                                         ? "Este producto te genera el ${cupon.monto.toStringAsFixed(0)}% OFF en cupon de descuentos en tus compras posteriores"
-                                        : "Este producto te genera  ₲${cupon.monto.toStringAsFixed(0)} en cupon de descuentos en tus compras posteriores",
+                                        : "Este producto te genera  ₲${numberFormat(cupon.monto.toStringAsFixed(0))} en cupon de descuentos en tus compras posteriores",
                                     style: TextStyle(
                                       overflow: TextOverflow.ellipsis,
-                                      fontSize: 12,
+                                      fontSize: 10,
                                     ),
                                     maxLines: 2,
                                   ),
@@ -226,319 +226,354 @@ class ProductDetailState extends State<ProductDetail> {
               ),
               Expanded(
                 flex: 45, // 40% de la altura
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 210, 248, 229),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-                    child: Column(
-                      children: [
-                        // Boton mas detalles
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed:
-                                  () => {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                            20,
-                                            5,
-                                            25,
-                                            10,
-                                          ),
-                                          height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.8,
-                                          child: SingleChildScrollView(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 215, 230, 252),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Positioned(
+                            top: 10,
+                            left: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap:
+                                      () => {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    15,
+                                                    25,
+                                                    10,
+                                                  ),
+                                              height:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.height *
+                                                  0.8,
+                                              child: SingleChildScrollView(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
-                                                    const Text(
-                                                      "Detalles ",
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                      onPressed:
-                                                          () => Navigator.pop(
-                                                            context,
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        const Text(
+                                                          "Detalles ",
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight.w600,
                                                           ),
-                                                      icon: const Icon(
-                                                        Icons
-                                                            .keyboard_arrow_down_rounded,
-                                                        size: 28,
-                                                      ),
+                                                        ),
+                                                        IconButton(
+                                                          onPressed:
+                                                              () =>
+                                                                  Navigator.pop(
+                                                                    context,
+                                                                  ),
+                                                          icon: const Icon(
+                                                            Icons
+                                                                .keyboard_arrow_down_rounded,
+                                                            size: 28,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Text(
+                                                      widget.data.description,
                                                     ),
                                                   ],
                                                 ),
-                                                Text(widget.data.description),
-                                              ],
-                                            ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      },
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.blueDark,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                      ),
+                                    ),
+
+                                    child: Icon(Icons.add, color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // NOMBRE DEL PRODUCTO
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 340,
+                                  child: Text(
+                                    widget.data.name,
+                                    style: TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  widget.data.categoryName.toString(),
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      90,
+                                      90,
+                                      90,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      '₲ ',
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      numberFormat(widget.data.price),
+                                      style: const TextStyle(
+                                        fontSize: 26.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                QuantityField(
+                                  onQuantityChanged: _handleQuantityChanged,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color:
+                                          AppColors.blueDark, // Color del borde
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(14),
+                                    color: Colors.transparent,
+                                  ),
+                                  child: BtnWishList(product: widget.data),
+                                ),
+
+                                SizedBox(width: 10),
+
+                                Expanded(
+                                  child: TextButton.icon(
+                                    style: TextButton.styleFrom(
+                                      textStyle: const TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                      backgroundColor: AppColors.blueDark,
+
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          14.0,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      final authProvider =
+                                          Provider.of<AuthProvider>(
+                                            context,
+                                            listen: false,
+                                          );
+
+                                      if (!authProvider.isAuthenticated) {
+                                        // Si el usuario no está logeado, redirigirlo a LoginScreen
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    const LoginScreen(),
                                           ),
                                         );
-                                      },
-                                    ),
-                                  },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    size: 28,
-                                    color: AppColors.grayDark,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                                        return;
+                                      }
 
-                        // NOMBRE DEL PRODUCTO
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 340,
-                              child: Text(
-                                widget.data.name,
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              widget.data.categoryName.toString(),
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 90, 90, 90),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 20, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    '₲ ',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    numberFormat(widget.data.price),
-                                    style: const TextStyle(
-                                      fontSize: 26.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              QuantityField(
-                                onQuantityChanged: _handleQuantityChanged,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Row(
-                          children: [
-                            Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.blueDark, // Color del borde
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(14),
-                                color: Colors.transparent,
-                              ),
-                              child: BtnWishList(product: widget.data),
-                            ),
-
-                            SizedBox(width: 10),
-
-                            Expanded(
-                              child: TextButton.icon(
-                                style: TextButton.styleFrom(
-                                  textStyle: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                  backgroundColor: AppColors.blueDark,
-
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  final authProvider =
-                                      Provider.of<AuthProvider>(
+                                      final cartItem = CartItem(
+                                        id: widget.data.id,
+                                        name: widget.data.name,
+                                        price: double.parse(widget.data.price),
+                                        image: widget.data.image,
+                                        quantity: 1,
+                                      );
+                                      Provider.of<CartProvider>(
                                         context,
                                         listen: false,
-                                      );
+                                      ).addToCart(cartItem, _selectedQuantity);
 
-                                  if (!authProvider.isAuthenticated) {
-                                    // Si el usuario no está logeado, redirigirlo a LoginScreen
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const LoginScreen(),
-                                      ),
-                                    );
-                                    return;
-                                  }
-
-                                  final cartItem = CartItem(
-                                    id: widget.data.id,
-                                    name: widget.data.name,
-                                    price: double.parse(widget.data.price),
-                                    image: widget.data.image,
-                                    quantity: 1,
-                                  );
-                                  Provider.of<CartProvider>(
-                                    context,
-                                    listen: false,
-                                  ).addToCart(cartItem, _selectedQuantity);
-
-                                  // Mostrar el SnackBar después de agregar el producto
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        "${widget.data.name} añadido al carrito",
-                                      ),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.shopping_basket_outlined,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                                label: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: const Text(
-                                    'Añadir',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 10),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  String nombreProducto = widget.data.name;
-                                  // String enlaceProducto = widget.data.permalink;
-                                  String mensaje =
-                                      "Hola, estoy interesado en este producto: $nombreProducto. Cantidad: $_selectedQuantity ";
-                                  // Generar la URL para WhatsApp
-                                  Uri url = Uri.parse(
-                                    "https://wa.me/595974133687?text=${Uri.encodeComponent(mensaje)}",
-                                  );
-                                  // Verificar si la URL se puede abrir
-                                  if (await canLaunchUrl(url)) {
-                                    await launchUrl(
-                                      url,
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  } else {
-                                    if (mounted) {
+                                      // Mostrar el SnackBar después de agregar el producto
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            'No se pudo abrir WhatsApp',
+                                            "${widget.data.name} añadido al carrito",
                                           ),
+                                          duration: const Duration(seconds: 2),
                                         ),
                                       );
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 6,
-                                  ),
-                                  backgroundColor: Colors.green,
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    mainAxisSize:
-                                        MainAxisSize
-                                            .min, // Ajusta el tamaño al contenido
-                                    children: [
-                                      Text(
-                                        'Pedir por WhatsApp',
+                                    },
+                                    icon: const Icon(
+                                      Icons.shopping_basket_outlined,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
+                                    label: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: const Text(
+                                        'Añadir',
                                         style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: 14,
+                                          fontSize: 18,
                                         ),
                                       ),
-                                      SizedBox(width: 10),
-                                      FaIcon(
-                                        FontAwesomeIcons.whatsapp,
-                                        color: Colors.white,
-                                        size: 26,
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+
+                          SizedBox(height: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      String nombreProducto = widget.data.name;
+                                      // String enlaceProducto = widget.data.permalink;
+                                      String mensaje =
+                                          "Hola, estoy interesado en este producto: $nombreProducto. Cantidad: $_selectedQuantity ";
+                                      // Generar la URL para WhatsApp
+                                      Uri url = Uri.parse(
+                                        "https://wa.me/595961736520?text=${Uri.encodeComponent(mensaje)}",
+                                      );
+                                      // Verificar si la URL se puede abrir
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(
+                                          url,
+                                          mode: LaunchMode.externalApplication,
+                                        );
+                                      } else {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'No se pudo abrir WhatsApp',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 6,
+                                      ),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min, // Ajusta el tamaño al contenido
+                                        children: [
+                                          Text(
+                                            'Pedir por WhatsApp',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          FaIcon(
+                                            FontAwesomeIcons.whatsapp,
+                                            color: Colors.white,
+                                            size: 26,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
