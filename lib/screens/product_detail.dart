@@ -60,6 +60,14 @@ class ProductDetailState extends State<ProductDetail> {
     //   context,
     // ).obtenerCuponDeProducto(widget.data.id);
 
+    final List<String> productImages =
+        [
+          widget.data.image,
+          widget.data.gal1,
+          widget.data.gal2,
+          widget.data.gal3,
+        ].where((img) => img.trim().isNotEmpty).toList();
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -150,18 +158,17 @@ class ProductDetailState extends State<ProductDetail> {
                   child: Stack(
                     children: [
                       Center(
-                        child: PageView(
+                        child: PageView.builder(
                           controller: _pageController,
+                          itemCount: productImages.length,
                           onPageChanged: (index) {
                             setState(() {
                               _currentIndex = index;
                             });
                           },
-                          children: [
-                            _buildProductImage(widget.data.image),
-                            _buildProductImage(widget.data.image),
-                            _buildProductImage(widget.data.image),
-                          ],
+                          itemBuilder: (context, index) {
+                            return _buildProductImage(productImages[index]);
+                          },
                         ),
                       ),
                       Positioned(
@@ -169,17 +176,17 @@ class ProductDetailState extends State<ProductDetail> {
                         right: 10,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildButton(0, widget.data.image),
-                            SizedBox(height: 10),
-                            _buildButton(1, widget.data.image),
-                            SizedBox(height: 10),
-                            _buildButton(2, widget.data.image),
-                          ],
+                          children: List.generate(productImages.length, (
+                            index,
+                          ) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: _buildButton(index, productImages[index]),
+                            );
+                          }),
                         ),
                       ),
 
-                      // if (widget.cupon != null)
                       if (cupon != null)
                         Positioned(
                           bottom: 0,
@@ -203,9 +210,6 @@ class ProductDetailState extends State<ProductDetail> {
                                     0,
                                   ),
                                   child: Text(
-                                    // cupon.tipo == 'percentage'
-                                    //     ? 'Cupón: ${cupon.codigo} - ${cupon.monto}%'
-                                    //     : 'Cupón: ${cupon.codigo} - Gs. ${cupon.monto}',
                                     cupon.tipo == "percentage"
                                         ? "Este producto te genera el ${cupon.monto.toStringAsFixed(0)}% OFF en cupon de descuentos en tus compras posteriores"
                                         : "Este producto te genera  ₲${numberFormat(cupon.monto.toStringAsFixed(0))} en cupon de descuentos en tus compras posteriores",
@@ -226,142 +230,136 @@ class ProductDetailState extends State<ProductDetail> {
               ),
               Expanded(
                 flex: 45, // 40% de la altura
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 215, 230, 252),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Positioned(
-                            top: 10,
-                            left: 0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                InkWell(
-                                  onTap:
-                                      () => {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                    20,
-                                                    15,
-                                                    25,
-                                                    10,
-                                                  ),
-                                              height:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.height *
-                                                  0.8,
-                                              child: SingleChildScrollView(
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 215, 230, 252),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      // BOTON MAS DETALLES
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap:
+                                  () => {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            20,
+                                            15,
+                                            25,
+                                            10,
+                                          ),
+                                          height:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.height *
+                                              0.8,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        const Text(
-                                                          "Detalles ",
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                        IconButton(
-                                                          onPressed:
-                                                              () =>
-                                                                  Navigator.pop(
-                                                                    context,
-                                                                  ),
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .keyboard_arrow_down_rounded,
-                                                            size: 28,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    const Text(
+                                                      "Detalles ",
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                     ),
-                                                    Text(
-                                                      widget.data.description,
+                                                    IconButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                          ),
+                                                      icon: const Icon(
+                                                        Icons
+                                                            .keyboard_arrow_down_rounded,
+                                                        size: 28,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                                Text(widget.data.description),
+                                              ],
+                                            ),
+                                          ),
+                                        );
                                       },
-                                  child: Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.blueDark,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(30),
-                                      ),
                                     ),
+                                  },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppColors.blueDark,
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(30),
+                                  ),
+                                ),
 
-                                    child: Icon(Icons.add, color: Colors.white),
-                                  ),
-                                ),
-                              ],
+                                child: Icon(Icons.add, color: Colors.white),
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
+                      ),
+                      // NOMBRE DEL PRODUCTO
+                      Positioned(
+                        top: 18,
+                        left: 20,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 326,
+                              child: Text(
+                                widget.data.name,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // CATEGORIA
+                      Positioned(
+                        top: 72,
+                        left: 20,
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.data.categoryName.toString(),
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 90, 90, 90),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                          // NOMBRE DEL PRODUCTO
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 340,
-                                  child: Text(
-                                    widget.data.name,
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: Row(
-                              children: [
-                                Text(
-                                  widget.data.categoryName.toString(),
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      90,
-                                      90,
-                                      90,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
+                      Column(
+                        children: [
+                          SizedBox(height: 100),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                             child: Row(
@@ -395,7 +393,7 @@ class ProductDetailState extends State<ProductDetail> {
                           ),
 
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: Row(
                               children: [
                                 Container(
@@ -572,8 +570,8 @@ class ProductDetailState extends State<ProductDetail> {
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

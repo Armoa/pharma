@@ -158,28 +158,30 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                       product: product,
                                     ),
                                   ),
-
-                                  Positioned(
-                                    bottom: 30,
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        16,
-                                        0,
-                                        0,
-                                        0,
-                                      ),
-                                      child: Text(
-                                        '₲${numberFormat(product.price)}',
-                                        style: TextStyle(
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          color: Theme.of(context).hintColor,
-                                          fontSize: 13,
+                                  // PRECIOS
+                                  if (product.onSale == 1)
+                                    Positioned(
+                                      bottom: 30,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          0,
+                                          0,
+                                          0,
+                                        ),
+                                        child: Text(
+                                          '₲${numberFormat(product.price)}',
+                                          style: TextStyle(
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            color: Theme.of(context).hintColor,
+                                            fontSize: 13,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  // PRECIO OFERTA
+
+                                  // Mostrar precio final (ya sea de oferta o regular)
                                   Positioned(
                                     bottom: 8,
                                     child: Padding(
@@ -190,9 +192,12 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                         0,
                                       ),
                                       child: Text(
-                                        '₲${numberFormat(product.priceSale)}',
+                                        '₲${numberFormat(product.onSale == 1 ? product.priceSale : product.price)}',
                                         style: TextStyle(
-                                          color: Colors.pink,
+                                          color:
+                                              product.onSale == 1
+                                                  ? Colors.pink
+                                                  : Colors.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -200,6 +205,46 @@ class _OffertProductCardState extends State<OffertProductCard> {
                                     ),
                                   ),
 
+                                  // Positioned(
+                                  //   bottom: 30,
+                                  //   child: Padding(
+                                  //     padding: const EdgeInsets.fromLTRB(
+                                  //       16,
+                                  //       0,
+                                  //       0,
+                                  //       0,
+                                  //     ),
+                                  //     child: Text(
+                                  //       '₲${numberFormat(product.price)}',
+                                  //       style: TextStyle(
+                                  //         decoration:
+                                  //             TextDecoration.lineThrough,
+                                  //         color: Theme.of(context).hintColor,
+                                  //         fontSize: 13,
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // // PRECIO OFERTA
+                                  // Positioned(
+                                  //   bottom: 8,
+                                  //   child: Padding(
+                                  //     padding: const EdgeInsets.fromLTRB(
+                                  //       16,
+                                  //       0,
+                                  //       0,
+                                  //       0,
+                                  //     ),
+                                  //     child: Text(
+                                  //       '₲${numberFormat(product.priceSale)}',
+                                  //       style: TextStyle(
+                                  //         color: Colors.pink,
+                                  //         fontSize: 16,
+                                  //         fontWeight: FontWeight.bold,
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   Positioned(
                                     bottom: 0,
                                     right: 0,

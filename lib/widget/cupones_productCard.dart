@@ -57,7 +57,7 @@ class _CuponProductCardState extends State<CuponProductCard> {
                     children: <Widget>[
                       Container(
                         width: 150, // Ancho fijo para cada tarjeta
-                        height: 170,
+                        height: 190,
                         margin: const EdgeInsets.fromLTRB(4, 4, 14, 0),
                         decoration: BoxDecoration(
                           color: AppColors.white,
@@ -141,8 +141,33 @@ class _CuponProductCardState extends State<CuponProductCard> {
                                       product: product,
                                     ),
                                   ),
+
+                                  // PRECIOS
+                                  if (product.onSale == 1)
+                                    Positioned(
+                                      bottom: 30,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          0,
+                                          0,
+                                          0,
+                                        ),
+                                        child: Text(
+                                          '₲${numberFormat(product.price)}',
+                                          style: TextStyle(
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            color: Theme.of(context).hintColor,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                  // Mostrar precio final (ya sea de oferta o regular)
                                   Positioned(
-                                    bottom: 10,
+                                    bottom: 8,
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
                                         16,
@@ -151,10 +176,14 @@ class _CuponProductCardState extends State<CuponProductCard> {
                                         0,
                                       ),
                                       child: Text(
-                                        '₲${numberFormat(product.price)}',
+                                        '₲${numberFormat(product.onSale == 1 ? product.priceSale : product.price)}',
                                         style: TextStyle(
-                                          color: Theme.of(context).hintColor,
-                                          fontSize: 13,
+                                          color:
+                                              product.onSale == 1
+                                                  ? Colors.pink
+                                                  : Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),

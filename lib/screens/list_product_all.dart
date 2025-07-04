@@ -4,6 +4,7 @@ import 'package:pharma/model/colors.dart';
 import 'package:pharma/model/product_model.dart';
 import 'package:pharma/provider/auth_provider.dart';
 import 'package:pharma/provider/cart_provider.dart';
+import 'package:pharma/provider/cupon_provider.dart';
 import 'package:pharma/screens/login.dart';
 import 'package:pharma/screens/product_detail.dart';
 import 'package:pharma/services/fetch_product.dart';
@@ -124,6 +125,12 @@ class _ListProductAllState extends State<ListProductAll> {
                         delegate: SliverChildBuilderDelegate((context, index) {
                           if (index < _products.length) {
                             final product = _products[index];
+                            final cuponProvider = Provider.of<CuponProvider>(
+                              context,
+                            );
+                            final tieneCupon = cuponProvider.productoTieneCupon(
+                              product.id,
+                            );
                             return Padding(
                               padding: const EdgeInsets.all(5),
                               child: InkWell(
@@ -167,6 +174,39 @@ class _ListProductAllState extends State<ListProductAll> {
                                           ),
                                         ),
                                       ),
+
+                                      // CUPONES
+                                      if (tieneCupon)
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 50,
+                                            height: 60,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(0),
+                                                topRight: Radius.circular(20),
+                                                bottomLeft: Radius.circular(20),
+                                                bottomRight: Radius.circular(0),
+                                              ),
+                                              color: const Color.fromARGB(
+                                                166,
+                                                255,
+                                                255,
+                                                255,
+                                              ),
+                                            ),
+
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Icon(
+                                                Icons.card_giftcard_rounded,
+                                                color: Colors.deepPurple,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
 
                                       // FAVORITOS
                                       Positioned(

@@ -61,7 +61,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (imagenSeleccionada != null) {
       final usuarioEmail =
           Provider.of<AuthProvider>(context, listen: false).email;
-      print("Usuario email en seleccionarYSubirImagen: $usuarioEmail");
+      // print("Usuario email en seleccionarYSubirImagen: $usuarioEmail");
 
       if (usuarioEmail != null) {
         try {
@@ -100,7 +100,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         );
       }
     } else {
-      print('No se seleccionó ninguna imagen.');
+      // print('No se seleccionó ninguna imagen.');
     }
   }
 

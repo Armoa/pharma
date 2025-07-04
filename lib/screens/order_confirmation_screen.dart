@@ -27,6 +27,7 @@ class OrderConfirmationScreen extends StatefulWidget {
   final int freeShipping;
   final List<dynamic> cuponesSeleccionados;
   final int cuponSeleccionado;
+  final double montoMinimoCupon;
 
   const OrderConfirmationScreen({
     super.key,
@@ -37,6 +38,7 @@ class OrderConfirmationScreen extends StatefulWidget {
     required this.freeShipping,
     required this.cuponesSeleccionados,
     required this.cuponSeleccionado,
+    required this.montoMinimoCupon,
   });
 
   @override
@@ -841,9 +843,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 Row(
                   children: [
                     Expanded(
@@ -873,26 +873,41 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           if (paymentProvider.selectedMethod == "Pago Online" &&
                               widget.cuponesSeleccionados.isNotEmpty &&
                               authProvider.userId != null) {
-                            final asignados = <int>{};
-                            for (final idCupon in widget.cuponesSeleccionados) {
-                              if (!asignados.contains(idCupon)) {
+                            if (subtotal >= widget.montoMinimoCupon) {
+                              int totalAsignados = 0;
+                              for (
+                                int i = 0;
+                                i < widget.cuponesParaGenerar;
+                                i++
+                              ) {
                                 await asignarCuponParaCliente(
                                   clienteId,
-                                  idCupon,
+                                  widget.cuponesSeleccionados.first,
                                 );
-                                asignados.add(idCupon);
+                                totalAsignados++;
                               }
-                            }
-                            // Mostrar feedback solo una vez
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '🎉 Se asignaron ${asignados.length} cupones al cliente',
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '🎉 Se asignaron $totalAsignados cupones al cliente',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 3),
                                 ),
-                                backgroundColor: Colors.green,
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
+                              );
+                            } else {
+                              // 🚫 No se cumple el mínimo
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '⚠️ La compra debe superar ₲${widget.montoMinimoCupon.toInt()} para recibir cupones',
+                                  ),
+                                  backgroundColor: Colors.orange,
+                                  duration: const Duration(seconds: 3),
+                                ),
+                              );
+                            }
                           }
 
                           // VALIDAR METODO DE PAGO

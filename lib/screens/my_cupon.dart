@@ -62,7 +62,12 @@ class CuponesScreenState extends State<CuponesScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.blueLight,
         surfaceTintColor: Colors.transparent,
-        title: Text('Mis Cupones'),
+        title: Column(
+          children: [
+            Text('Mis Cupones'),
+            Text('Cantidad: ${cupones.length}', style: TextStyle(fontSize: 11)),
+          ],
+        ),
 
         actions: [
           IconButton(

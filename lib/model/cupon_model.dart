@@ -40,12 +40,16 @@ class ProductoConCupon {
   ProductoConCupon({required this.producto, required this.cupon});
 
   factory ProductoConCupon.fromJson(Map<String, dynamic> json) {
+    print('📦 JSON Prdocuto conCupon: ${json['minimo']}'); //
+
     return ProductoConCupon(
       producto: Product.fromJson({
         'id': int.tryParse(json['id'].toString()) ?? 0,
         'name': json['name']?.toString() ?? '',
         'image': json['image']?.toString() ?? '',
         'price': json['price']?.toString() ?? '',
+        'priceSale': json['price_sale']?.toString() ?? '',
+        'onSale': int.tryParse(json['on_sale'].toString()) ?? 0,
         // Podés sumar más campos si el JSON lo incluye más adelante
       }),
       cupon: Cupon.fromJson(json['cupon']),
@@ -60,6 +64,8 @@ class CuponDisponible {
   final double amount;
   final String type;
   final int freeShipping;
+  final int? minPurchase;
+  final int usageLimit;
 
   CuponDisponible({
     required this.clienteCuponId,
@@ -68,6 +74,8 @@ class CuponDisponible {
     required this.amount,
     required this.type,
     required this.freeShipping,
+    required this.minPurchase,
+    required this.usageLimit,
   });
 
   @override
@@ -81,6 +89,7 @@ class CuponDisponible {
   int get hashCode => clienteCuponId.hashCode;
 
   factory CuponDisponible.fromJson(Map<String, dynamic> json) {
+    print('📦 JSON Prdocuto conCupon (minimo): ${json['cupon']?['minimo']}');
     return CuponDisponible(
       clienteCuponId: int.parse(json['cliente_cupon_id'].toString()),
       code: json['code'],
@@ -88,6 +97,8 @@ class CuponDisponible {
       amount: double.parse(json['amount'].toString()),
       type: json['type'],
       freeShipping: int.parse(json['free_shipping'].toString()),
+      minPurchase: int.tryParse(json['minimo']?.toString() ?? '0') ?? 0,
+      usageLimit: int.tryParse(json['usage_limit']?.toString() ?? '0') ?? 0,
     );
   }
 }

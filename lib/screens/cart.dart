@@ -30,8 +30,8 @@ class CartScreenView extends StatefulWidget {
 
 class _CartScreenViewState extends State<CartScreenView> {
   Map<String, dynamic>? cuponAplicado;
-  double totalConDescuento = 0.0;
-  double totalOriginal = 0.0;
+  double totalConDescuento = 0;
+  double totalOriginal = 0;
 
   List<CuponDisponible> cuponesDelCliente = [];
   CuponDisponible? cuponSeleccionado;
@@ -327,8 +327,16 @@ class _CartScreenViewState extends State<CartScreenView> {
                             Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.blueBlak
                                 : const Color.fromARGB(255, 248, 248, 248),
+
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
                         border: const Border(
-                          top: BorderSide(color: Colors.grey, width: 1),
+                          top: BorderSide(
+                            color: Color.fromARGB(255, 201, 201, 201),
+                            width: 1,
+                          ),
                         ),
                       ),
                       child: Column(
@@ -341,7 +349,7 @@ class _CartScreenViewState extends State<CartScreenView> {
                               ),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
                                 children: [
@@ -423,15 +431,6 @@ class _CartScreenViewState extends State<CartScreenView> {
                                 ],
                               ),
                             ),
-
-                          if (cuponSeleccionado != null)
-                            Text(
-                              '💸 Descuento aplicado: ₲${(totalOriginal - totalConDescuento).toStringAsFixed(0)}',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -447,21 +446,56 @@ class _CartScreenViewState extends State<CartScreenView> {
                             ],
                           ),
                           const SizedBox(height: 8),
+                          if (cuponSeleccionado != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Descuento aplicado:",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "- ₲${numberFormat((totalOriginal - totalConDescuento).toStringAsFixed(0))}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                "Total:",
+                              (cuponSeleccionado != null)
+                                  ? Text(
+                                    "Total con descuento:",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red[900],
+                                    ),
+                                  )
+                                  : Text(
+                                    "Total:",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red[900],
+                                    ),
+                                  ),
+
+                              Text(
+                                "₲. ${numberFormat(totalConDescuento.toStringAsFixed(0).toString())}",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "₲. ${numberFormat(totalConDescuento.toStringAsFixed(0).toString())}",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red[900],
                                 ),
                               ),
                             ],
@@ -518,6 +552,34 @@ class _CartScreenViewState extends State<CartScreenView> {
                                 context,
                                 listen: false,
                               );
+
+                              double? montoMinimoGlobal;
+                              for (final item in cartItems) {
+                                final cupon = cuponProvider
+                                    .obtenerCuponDeProducto(item.id);
+                                if (cupon != null && cupon.minimo != null) {
+                                  if (montoMinimoGlobal == null ||
+                                      cupon.minimo! < montoMinimoGlobal) {
+                                    montoMinimoGlobal = cupon.minimo!;
+                                  }
+                                }
+                                final double montoMinimo =
+                                    montoMinimoGlobal ?? 0;
+
+                                if (totalOriginal >= montoMinimo) {
+                                  // ✅ Acreditar cupones
+                                } else {
+                                  // ❌ Mostrar advertencia al usuario
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '⚠️ La compra debe ser al menos ₲$montoMinimoGlobal para recibir cupones',
+                                      ),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                }
+                              }
                               // Recorremos los productos y obtenemos los cupones asociados
                               final cuponesSeleccionados =
                                   cartItems
@@ -530,18 +592,27 @@ class _CartScreenViewState extends State<CartScreenView> {
                                       .toSet()
                                       .toList();
 
-                              print('TOTAL ORIGINAL: $totalOriginal');
-                              print('TOTAL CON DESCUENTO: $totalConDescuento');
-                              print('TOTAL ORIGINAL: $totalOriginal');
-                              print(
-                                'CUPONES SELECCIONADOS: $cuponesSeleccionados',
-                              );
-                              // CANTIDAD DE CUPONES A GENERAR
-                              print(
-                                'CUPONES PARA GENERAR: $cuponesParaGenerar',
-                              );
-                              print('CUPONES SECT. ID: ');
-                              print(cuponSeleccionado?.clienteCuponId);
+                              // Datos para generar copones
+                              // print(
+                              //   'Cupon Compra minima: ${montoMinimoGlobal.toString()}',
+                              // );
+                              // print('TOTAL CON DESCUENTO: $totalConDescuento');
+                              // print('TOTAL ORIGINAL: $totalOriginal');
+                              // print(
+                              //   'CUPONES SELECCIONADOS: $cuponesSeleccionados',
+                              // );
+                              // // CANTIDAD DE CUPONES A GENERAR
+                              // print(
+                              //   'CUPONES PARA GENERAR: $cuponesParaGenerar',
+                              // );
+
+                              // print(
+                              //   'CUP. SECT. ID: ${cuponSeleccionado?.clienteCuponId}',
+                              // );
+
+                              // print(
+                              //   'Compra mínima: ${cuponSeleccionado?.minPurchase}',
+                              // );
 
                               Navigator.push(
                                 context,
@@ -560,6 +631,8 @@ class _CartScreenViewState extends State<CartScreenView> {
                                         cuponSeleccionado:
                                             cuponSeleccionado?.clienteCuponId ??
                                             0,
+                                        montoMinimoCupon:
+                                            montoMinimoGlobal ?? 0,
                                       ),
                                 ),
                               );
